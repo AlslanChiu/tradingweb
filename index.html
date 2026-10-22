@@ -56,9 +56,22 @@
         <div>
           <div class="flex items-center gap-2">
             <h1 class="text-lg font-bold tracking-tight text-white">GEM V6.5 全市場兩階段漏斗 × 半年回測 × TOP 10 決策系統</h1>
-            <span class="px-2 py-0.5 text-[11px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-full">V6.5 Pro 雙階段全量版</span>
+            <span class="px-2 py-0.5 text-[11px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-full">V6.5.2 真實時間戳記校準版</span>
           </div>
-          <p class="text-xs text-slate-400">第一階段：60強快速選股與半年進出回測 ➔ 第二階段：自動續傳下載「金額≥1.5億 / 張數≥1500 / 高價≥300元且≥150張」全數合格股票</p>
+          <!-- NEW: Live Data Timestamp & Sync Completion Status Bar -->
+          <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-300 mt-1">
+            <span class="inline-flex items-center gap-1">
+              <i data-lucide="calendar-clock" class="w-3.5 h-3.5 text-cyan-400"></i>
+              <span>市場資料最新交易日：<strong id="hdrMarketDataDate" class="text-cyan-300 font-mono">載入中...</strong></span>
+            </span>
+            <span class="inline-flex items-center gap-1">
+              <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-400"></i>
+              <span>系統更新完成時間：<strong id="hdrLastSyncTime" class="text-emerald-300 font-mono">尚未執行 API 同步 (目前為內建預設庫)</strong></span>
+            </span>
+            <span id="hdrFreshnessBadge" class="px-2 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 font-semibold text-[10px]">
+              ⚠️ 預設範例庫 (請點擊右方按鈕同步最新 API)
+            </span>
+          </div>
         </div>
       </div>
 
@@ -128,7 +141,7 @@
     <section class="glass-card rounded-2xl p-4 lg:p-5 border border-slate-800">
       <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
         <div class="flex items-start gap-3">
-          <div class="w-11 h-11 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center shrink-0">
+          <div id="regimeIconBox" class="w-11 h-11 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center shrink-0">
             <i data-lucide="shield-check" class="w-6 h-6 text-emerald-400"></i>
           </div>
           <div>
@@ -141,6 +154,9 @@
             <p id="regimeDescText" class="text-xs text-slate-300 mt-1">
               大盤日線守穩 SMA20 且 週線多頭（週收盤 ≥ 週SMA5 或 週OSC ≥ 0）｜四檔固定倉位 100% 正常執行，開放第一檔滿倉（100% / 70%）與保本加碼。
             </p>
+            <div id="regimeDiagnosticLine" class="text-[11px] text-amber-300 font-mono mt-1">
+              🔍 客觀判定明細：載入中...
+            </div>
           </div>
         </div>
 
@@ -163,21 +179,21 @@
             <span id="taiexClose" class="text-lg font-bold text-white">23,540.00</span>
             <span id="taiexChg" class="text-xs font-semibold text-rose-400">+1.12%</span>
           </div>
-          <div id="taiexDate" class="text-[10px] text-slate-500 mt-0.5">過去半年基準序列</div>
+          <div id="taiexDate" class="text-[10px] text-cyan-400 font-mono mt-0.5">數據日期：預設範例</div>
         </div>
         <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3">
           <div class="text-[11px] text-slate-400">大盤日線 SMA20 濾網</div>
           <div class="flex items-baseline gap-2 mt-1">
             <span id="taiexSma20" class="text-base font-bold text-emerald-400">守穩月線上</span>
           </div>
-          <div id="taiexSma20Sub" class="text-[10px] text-slate-400 mt-0.5">SMA20: 23,110</div>
+          <div id="taiexSma20Sub" class="text-[10px] text-slate-400 font-mono mt-0.5">SMA20: 23,110.00 (乖離 +1.86%)</div>
         </div>
         <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3">
           <div class="text-[11px] text-slate-400">大盤週線趨勢 (W-SMA5 / OSC)</div>
           <div class="flex items-baseline gap-2 mt-1">
             <span id="taiexWeeklyStatus" class="text-base font-bold text-emerald-400">週線多頭</span>
           </div>
-          <div id="taiexWeeklySub" class="text-[10px] text-slate-400 mt-0.5">週OSC: +145.2</div>
+          <div id="taiexWeeklySub" class="text-[10px] text-slate-400 font-mono mt-0.5">週SMA5: 23,200 | 週OSC: +145.2</div>
         </div>
         <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3">
           <div class="text-[11px] text-slate-400">大盤 20 日漲幅 (RS 基準)</div>
@@ -187,23 +203,23 @@
           <div class="text-[10px] text-slate-400 mt-0.5">計算個股 RS_Alpha20 超額</div>
         </div>
         <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3">
-          <div class="text-[11px] text-slate-400">雙軌流動性濾網狀態</div>
+          <div class="text-[11px] text-slate-400">雙軌流動性濾網合格數</div>
           <div class="flex items-baseline gap-2 mt-1">
-            <span id="funnelPassCount" class="text-sm font-bold text-cyan-400">金額≥1.5億/高價豁免</span>
+            <span id="funnelPassCount" class="text-sm font-bold text-cyan-400">載入中...</span>
           </div>
-          <div class="text-[10px] text-slate-400 mt-0.5">保護千金股與低張數強勢股</div>
+          <div id="funnelPassSub" class="text-[10px] text-slate-400 mt-0.5">金額≥1.5億 / 張數≥1500 / 高價≥300</div>
         </div>
         <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3">
-          <div class="text-[11px] text-slate-400">已下載分析總檔數</div>
+          <div class="text-[11px] text-slate-400">已下載分析總檔數 & 更新時間</div>
           <div class="flex items-baseline gap-2 mt-1">
             <span id="summaryCounts" class="text-base font-bold text-indigo-400">60 檔</span>
           </div>
-          <div id="dataSourceIndicator" class="text-[10px] text-slate-400 mt-0.5 truncate">內建 60 強完整半年回測庫</div>
+          <div id="dataSourceIndicator" class="text-[10px] text-emerald-300 font-mono mt-0.5 truncate">內建 60 強完整半年回測庫</div>
         </div>
       </div>
     </section>
 
-    <!-- NEW SECTION A: 60強 & 全市場已掃描標的【過去半年策略進出回測績效總覽】 -->
+    <!-- SECTION A: 60強 & 全市場已掃描標的【過去半年策略進出回測績效總覽】 -->
     <section class="glass-card rounded-2xl p-5 border border-emerald-500/30">
       <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4 mb-4">
         <div class="flex items-center gap-2.5">
@@ -227,12 +243,11 @@
         </button>
       </div>
 
-      <!-- Portfolio Backtest Summary KPI Cards -->
       <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         <div class="bg-slate-900/95 border border-slate-800 rounded-xl p-3.5">
           <div class="text-[11px] text-slate-400">半年策略平均累計報酬率</div>
           <div id="btAvgReturn" class="text-xl font-extrabold text-emerald-400 mt-1">+0.00%</div>
-          <div class="text-[10px] text-slate-500 mt-0.5">考慮類別 A(70%)/B(100%) 部位調整前之單股累計</div>
+          <div class="text-[10px] text-slate-500 mt-0.5">考慮類別 A(70%)/B(100%) 風險平價</div>
         </div>
         <div class="bg-slate-900/95 border border-slate-800 rounded-xl p-3.5">
           <div class="text-[11px] text-slate-400">全池總交易次數 / 勝率</div>
@@ -271,8 +286,8 @@
           </div>
           <div>
             <h2 class="text-base font-bold text-white flex items-center gap-2">
-              <span>🏆 GEM V6.5 當期策略嚴選【TOP 10 前十強排名、半年回測勝率與具體入選原因】</span>
-              <span class="px-2 py-0.5 text-[11px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded">自動剔除 Hard Veto 標的</span>
+              <span>🏆 GEM V6.5 當期策略嚴選【TOP 10 前十強排名、數據日期、半年勝率與具體入選原因】</span>
+              <span class="px-2 py-0.5 text-[11px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded">自動反應大盤 Regime 1~4 降檔保護</span>
             </h2>
             <p class="text-xs text-slate-400 mt-0.5">
               綜合排序公式：<code class="text-indigo-300">四檔倉位優先序 (Tier 1 ➔ Tier 3) + 雙引擎綜合權重 (MPS×0.65 + GEM×0.35) + 相對大盤超額 RS_Alpha20 + 半年實戰回測正期望值加分</code>
@@ -294,13 +309,13 @@
       </div>
     </section>
 
-    <!-- SECTION 6: 全市場掃描總表 (All Analyzed Stocks Table + Backtest Columns) -->
+    <!-- SECTION 6: 全市場掃描總表 -->
     <section class="glass-card rounded-2xl border border-slate-800 overflow-hidden">
       <div class="p-4 lg:p-5 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 class="text-base font-bold text-white flex items-center gap-2">
             <i data-lucide="layers" class="w-5 h-5 text-indigo-400"></i>
-            <span>陸、全市場動態漏斗監控與半年回測績效總表 (點擊任一列展開下方「標準六大結構報告 ＋ 半年每筆進出明細」)</span>
+            <span>陸、全市場動態漏斗監控與半年回測績效總表 (含每檔最新資料日期與更新狀態)</span>
           </h2>
         </div>
 
@@ -331,7 +346,7 @@
           <thead class="sticky top-0 z-10 bg-slate-900">
             <tr class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 border-b border-slate-800">
               <th class="py-3 px-3">排名</th>
-              <th class="py-3 px-3">代號/名稱</th>
+              <th class="py-3 px-3">代號/名稱 & 數據日期</th>
               <th class="py-3 px-3">收盤價 (漲跌)</th>
               <th class="py-3 px-3">單日成交金額 / 張數</th>
               <th class="py-3 px-3">股性分類</th>
@@ -352,19 +367,17 @@
     <!-- DETAILED 6-STRUCTURE REPORT, BACKTEST TRADE LOG & CHART PANEL -->
     <section id="detailSection" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
       <div class="lg:col-span-7 space-y-4">
-        <!-- Standard 6-Structure Card -->
         <div class="glass-card rounded-2xl p-5 border border-slate-800">
           <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3 mb-4">
             <div class="flex items-center gap-2.5">
               <span id="detailStockBadge" class="px-2.5 py-1 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-bold text-sm">-</span>
               <span id="detailTierBadge" class="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold text-xs">-</span>
             </div>
-            <span class="text-[11px] text-slate-400">嚴格依循《GEM V6.5 規範書》陸、標準六大結構輸出</span>
+            <span id="detailDataTimeLabel" class="text-[11px] text-cyan-300 font-mono">-</span>
           </div>
           <div id="sixStructureReport" class="space-y-3.5 text-xs leading-relaxed"></div>
         </div>
 
-        <!-- NEW: Individual Stock 6-Month Trade-by-Trade Backtest Log -->
         <div class="glass-card rounded-2xl p-5 border border-emerald-500/30">
           <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3 mb-3">
             <h3 class="text-sm font-bold text-white flex items-center gap-2">
@@ -393,7 +406,6 @@
         </div>
       </div>
 
-      <!-- Right 5 Cols: Charts + Equity Curve + Pyramiding Calculator -->
       <div class="lg:col-span-5 space-y-4">
         <div class="glass-card rounded-2xl p-4 border border-slate-800">
           <div class="flex items-center justify-between mb-2">
@@ -421,7 +433,6 @@
           </div>
         </div>
 
-        <!-- Strategy Equity Curve Chart -->
         <div class="glass-card rounded-2xl p-4 border border-slate-800">
           <div class="flex items-center justify-between mb-2">
             <h3 class="text-xs font-bold text-emerald-300 flex items-center gap-1.5">
@@ -434,7 +445,6 @@
           </div>
         </div>
 
-        <!-- Pyramiding Calculator -->
         <div class="glass-card rounded-2xl p-4 border border-slate-800">
           <h3 class="text-xs font-bold text-amber-300 flex items-center gap-1.5 mb-2">
             <i data-lucide="shield-alert" class="w-4 h-4"></i>
@@ -474,7 +484,6 @@
       </div>
 
       <div class="space-y-3.5 text-xs text-slate-300">
-        <!-- Funnel Architecture Explanation -->
         <div class="p-4 rounded-xl bg-indigo-950/40 border border-indigo-500/30 space-y-2">
           <div class="font-bold text-indigo-300 text-sm flex items-center gap-1.5">
             <i data-lucide="filter" class="w-4 h-4 text-amber-400"></i>
@@ -484,39 +493,37 @@
             <div class="bg-slate-900/90 p-3 rounded-lg border border-slate-800">
               <div class="font-bold text-cyan-300 mb-1">⚡ Stage A (第一階段：前 60 強優先快篩與回測)</div>
               <p class="text-[11px] text-slate-400 leading-relaxed">
-                先抓取全市場最新單日行情快照（TWSE/TPEx OpenAPI 或 FinMind 全市場表），套用您的<b>雙軌流動性濾網</b>後，優先抽出<b>當日最強 60 檔（45檔動能點火 + 15檔高價/量縮潛伏）</b>下載過去半年資料，立即完成 <b>60 檔半年進出績效回測與第一版 TOP 10</b>。
+                先同步最新台灣加權指數 (`TAIEX`) 判定大盤處於 Regime 1~4 何種氣候，接著優先針對 60 強核心與高價股下載過去半年資料，立即完成 <b>60 檔半年進出績效回測與第一版 TOP 10</b>。
               </p>
             </div>
             <div class="bg-slate-900/90 p-3 rounded-lg border border-slate-800">
               <div class="font-bold text-emerald-300 mb-1">🌐 Stage B (第二階段：全數合格股票背景自動續傳)</div>
               <p class="text-[11px] text-slate-400 leading-relaxed">
-                完成前 60 檔後，系統<b>不中斷自動進入第二階段</b>，將全市場所有符合<code class="text-amber-300">「成交金額 ≥ 1.5 億 OR 成交張數 ≥ 1,500 張 OR (股價 ≥ 300 元 且 張數 ≥ 150 張)」</code>之剩餘數百檔合格股票全數排入佇列下載半年資料，動態刷新全市場 TOP 10！
+                完成前 60 檔後，系統<b>不中斷自動進入第二階段</b>，將全市場所有符合<code class="text-amber-300">「成交金額 ≥ 1.5 億 OR 成交張數 ≥ 1,500 張 OR (股價 ≥ 300 元 且 張數 ≥ 150 張)」</code>之剩餘合格股票全數排入佇列下載半年資料！
               </p>
             </div>
           </div>
         </div>
 
-        <!-- Configurable Liquidity Filter Parameters -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-900 p-3.5 rounded-xl border border-slate-800">
           <div>
             <label class="text-[11px] text-slate-400 block mb-1">條件 1：單日成交金額門檻 (億元)</label>
-            <input id="fltTurnoverYi" type="number" step="0.5" value="1.5" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-amber-400 font-bold">
+            <input id="fltTurnoverYi" type="number" step="0.5" value="1.5" onchange="recalculateAll()" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-amber-400 font-bold">
           </div>
           <div>
             <label class="text-[11px] text-slate-400 block mb-1">條件 2：或 單日成交張數門檻 (張)</label>
-            <input id="fltVolumeLots" type="number" step="100" value="1500" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-cyan-400 font-bold">
+            <input id="fltVolumeLots" type="number" step="100" value="1500" onchange="recalculateAll()" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-cyan-400 font-bold">
           </div>
           <div>
             <label class="text-[11px] text-slate-400 block mb-1">條件 3：或 高價股豁免 (股價≥300之最低張數)</label>
-            <input id="fltHighPriceLots" type="number" step="50" value="150" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-purple-400 font-bold">
+            <input id="fltHighPriceLots" type="number" step="50" value="150" onchange="recalculateAll()" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-purple-400 font-bold">
           </div>
         </div>
 
-        <!-- Mode Selection -->
         <div class="space-y-2">
           <label class="flex items-center gap-2 cursor-pointer p-2.5 rounded-lg bg-slate-900 border border-indigo-500/40">
             <input type="checkbox" id="autoContinueStageB" checked class="accent-indigo-500 w-4 h-4">
-            <span class="font-semibold text-white">完成第一階段 60 強後，自動無縫續傳「全市場所有符合上述三條件」之全部股票（約 250~450 檔）</span>
+            <span class="font-semibold text-white">完成第一階段 60 強後，自動無縫續傳「全市場所有符合上述三條件」之全部股票</span>
           </label>
           <label class="flex items-center gap-2 cursor-pointer p-2.5 rounded-lg bg-slate-900 border border-slate-800">
             <input type="checkbox" id="fastPriceOnlyMode" checked class="accent-indigo-500 w-4 h-4">
@@ -524,7 +531,6 @@
           </label>
         </div>
 
-        <!-- Core 60 Seed List -->
         <div>
           <label class="block text-slate-400 text-[11px] mb-1">第一階段 60 強核心保送與高價種子池（含千金股、AI、CoWoS、光通訊、散熱、權值，可自由增刪）：</label>
           <textarea id="customScanCodesInput" rows="2" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-[11px] text-slate-200 font-mono focus:outline-none focus:border-indigo-500">2330, 2317, 2454, 2382, 3017, 3264, 3105, 3661, 6669, 2345, 4979, 3450, 8069, 2408, 1303, 2308, 3037, 3035, 3443, 6285, 2368, 2383, 3324, 3533, 6187, 3131, 6488, 5274, 6515, 1519, 1513, 2603, 2881, 2882, 3711, 2379, 3008, 6442, 4966, 8299, 2357, 2356, 3231, 2449, 6223, 3583, 2455, 4908, 3363, 3081, 6451, 3680, 6239, 8046, 3189, 2313, 6278, 3653, 1503, 6805</textarea>
@@ -532,7 +538,7 @@
       </div>
 
       <div class="flex items-center justify-between pt-3 border-t border-slate-800">
-        <span class="text-[11px] text-slate-400">💡 隨時可按「暫停佇列」或「停止並鎖定排名」，所有已下載股票皆會自動保存於本機</span>
+        <span class="text-[11px] text-slate-400">💡 隨時可按「暫停佇列」或「停止並鎖定排名」，所有已下載股票與更新時間皆會自動保存於本機</span>
         <div class="flex gap-2">
           <button onclick="toggleModal('scannerModal')" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs">取消</button>
           <button onclick="startTwoStageMarketScan()" class="px-5 py-2 rounded-lg bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white text-xs font-bold shadow-lg shadow-indigo-600/30">
@@ -571,8 +577,8 @@
           </label>
         </div>
         <div class="pt-2 border-t border-slate-800 flex items-center justify-between">
-          <span class="text-slate-400">重置為內建 60 強完整範例資料庫</span>
-          <button onclick="resetToBuiltIn60()" class="px-3 py-1 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30 text-xs">重置預設 60 強</button>
+          <span class="text-slate-400">清除快取並重置為內建 60 強範例資料庫</span>
+          <button onclick="resetToBuiltIn60()" class="px-3 py-1 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30 text-xs">清除快取重置</button>
         </div>
       </div>
       <div class="flex justify-end gap-2 pt-3 border-t border-slate-800">
@@ -583,7 +589,7 @@
 
 <script>
 // ============================================================================
-// GEM V6.5 全市場兩階段動態漏斗 × 半年逐筆回測 × TOP 10 決策引擎
+// GEM V6.5.2 全市場兩階段動態漏斗 × 半年逐筆回測 × 真實時間戳記與大盤校準引擎
 // ============================================================================
 
 const STOCK_META_60 = [
@@ -655,16 +661,23 @@ STOCK_META_60.forEach(m => { STOCK_NAME_MAP[m.id] = m.name; });
 let state = {
   baseCapital: 100,
   regimeMode: 'AUTO',
+  isRealApiData: false,
+  lastSyncCompletedAt: null, // 格式: YYYY-MM-DD HH:mm:ss
+  marketDataLatestDate: null, // 格式: YYYY-MM-DD
   currentRegime: {
     code: 'R1',
     name: 'Regime 1：全面 Risk-On (順風主戰場)',
     desc: '大盤日線守穩 SMA20 且 大盤週線多頭（週收盤 ≥ 週SMA5 或 週OSC ≥ 0）｜四檔固定倉位 100% 正常執行，開放第一檔滿倉（100% / 70%）與保本加碼。',
     rightAuthText: '100% 正常開放',
+    taiexDate: '2026-10-22 (範例)',
     taiexClose: 23540,
     taiexChgPct: 1.12,
     taiexSma20: 23110,
     taiexAboveSma20: true,
+    taiexConsec2DaysBelow: false,
+    taiexSingleDropPctBelowSma20: 0,
     taiexBreak2DaysOr2Pct: false,
+    taiexWeeklySma5: 23200,
     taiexWeeklyBull: true,
     taiexWeeklyOsc: 145.2,
     taiexRet20: 3.45
@@ -680,6 +693,12 @@ let state = {
 let priceChartInstance = null;
 let volChartInstance = null;
 let equityChartInstance = null;
+
+function formatNowTimestamp() {
+  const d = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
 
 // ============================================================================
 // 1. 技術指標計算函式 (SMA, EMA, MACD, Bollinger, ATR14%)
@@ -748,7 +767,7 @@ function calcATR14Series(rows) {
 }
 
 // ============================================================================
-// 2. 過去半年 (185天) V6.5 策略逐日模擬回測引擎 (Historical Backtest Engine)
+// 2. 過去半年 (185天) V6.5 策略逐日模擬回測引擎
 // ============================================================================
 function runSixMonthBacktestV65(rows, isCategoryB, allocRatio, baseCapWan) {
   const n = rows.length;
@@ -798,16 +817,12 @@ function runSixMonthBacktestV65(rows, isCategoryB, allocRatio, baseCapWan) {
     const atrPct = atrPctArr[i] || 3.5;
 
     if (!inPos) {
-      // 檢驗 V6.5 四大進場訊號：
       const pre5BwSlice = boll.bw.slice(Math.max(0, i - 5), i).filter(v => v !== null);
       const pre5Bw = pre5BwSlice.length ? pre5BwSlice.reduce((a, b) => a + b, 0) / pre5BwSlice.length : bw;
       const high20Prev = Math.max(...closes.slice(Math.max(0, i - 20), i));
 
-      // 1. 模型 A (布林收斂點火): 前帶寬 <= 25% + 收盤穿上軌 + 量 >= 1.35x MA60
       const entryModelA = (pre5Bw <= 25.5 && c >= ub * 0.992 && volRatio >= 1.35 && c > r.open);
-      // 2. 模型 C / 加碼二 (多頭突破 20 日前高): 守穩月季線 + 帶量突破 20 日高點
       const entryBreakoutHigh = (c > sma20 && sma20 >= sma60 * 0.98 && c > high20Prev && volRatio >= 1.40 && c >= r.open);
-      // 3. Stage 2 綠燈訊號 A (左側量縮回測季線/下軌止跌收紅)
       const touchSupport = (Math.abs(c - sma60) / sma60 <= 0.032) || (c <= lb * 1.025);
       const entrySignalA = (c < sma20 && c >= sma60 * 0.96 && touchSupport && volRatio <= 0.65 && c > r.open && c > prev.close);
 
@@ -829,7 +844,6 @@ function runSixMonthBacktestV65(rows, isCategoryB, allocRatio, baseCapWan) {
       }
       equityCurve[i] = equity;
     } else {
-      // 持倉中：更新波段最高價與檢驗 V6.5 出場條件
       if (c > pos.peakPrice) pos.peakPrice = c;
       const holdDays = i - pos.entryIdx;
       const peakDdPct = ((pos.peakPrice - c) / pos.peakPrice) * 100;
@@ -839,24 +853,15 @@ function runSixMonthBacktestV65(rows, isCategoryB, allocRatio, baseCapWan) {
       let exitReason = null;
       let exitPrice = c;
 
-      // 出場 1：跌破 Initial Stop 初始防守停損價
       if (c <= pos.initStopPrice) {
         exitReason = `觸發 Initial Stop 停損 (-${pos.initStopPct.toFixed(1)}%)`;
-      }
-      // 出場 2：拋物線逃頂開關觸發後跌破 SMA5
-      else if (parabolic && c < sma5 && (prev.close < (sma5Arr[i - 1] || sma5) || peakDdPct >= 8.0)) {
+      } else if (parabolic && c < sma5 && (prev.close < (sma5Arr[i - 1] || sma5) || peakDdPct >= 8.0)) {
         exitReason = `🔥 拋物線逃頂開關結利 (破SMA5)`;
-      }
-      // 出場 3：類別 B 穩健股 收盤實體跌破 SMA10 (持有滿3日以上且非左側抄底初段)
-      else if (isCategoryB && holdDays >= 3 && c < sma10 && prev.close < (sma10Arr[i - 1] || sma10)) {
+      } else if (isCategoryB && holdDays >= 3 && c < sma10 && prev.close < (sma10Arr[i - 1] || sma10)) {
         exitReason = `類別B 跌破十日線 (SMA10) 移動停利`;
-      }
-      // 出場 4：類別 A 高波股 收盤跌破 SMA20 或 自最高點回撤 >= 15%
-      else if (!isCategoryB && holdDays >= 3 && ((c < sma20 && prev.close < (sma20Arr[i - 1] || sma20)) || peakDdPct >= 15.0)) {
+      } else if (!isCategoryB && holdDays >= 3 && ((c < sma20 && prev.close < (sma20Arr[i - 1] || sma20)) || peakDdPct >= 15.0)) {
         exitReason = peakDdPct >= 15.0 ? `類別A 自波段高點回撤 ≥ 15% 停利` : `類別A 跌破月線 (SMA20) 移動停利`;
-      }
-      // 若到最後一天仍持倉，以最新收盤價結算為「持倉續抱中」
-      else if (i === n - 1) {
+      } else if (i === n - 1) {
         exitReason = `🟢 目前持倉續抱中 (依最新收盤結算浮盈)`;
       }
 
@@ -938,6 +943,8 @@ function analyzeStockV65(stockRaw) {
   const atrPctArr = calcATR14Series(rows);
 
   const c = last.close;
+  const latestBarDate = last.date || '-';
+  const syncedAt = stockRaw.syncedAt || state.lastSyncCompletedAt || '內建預設範例';
   const chgPct = prev.close > 0 ? ((c - prev.close) / prev.close) * 100 : 0;
   const sma5 = sma5Arr[n - 1] || c;
   const sma10 = sma10Arr[n - 1] || c;
@@ -959,13 +966,19 @@ function analyzeStockV65(stockRaw) {
   // 單日成交金額 (億元) = 收盤價(元) * 成交張數 * 1000 / 1e8
   const turnoverYi = Number(((c * last.volume * 1000) / 1e8).toFixed(2));
   const isHighPriceStock = c >= 300;
-  let liquidityChannel = '一般主流';
-  if (isHighPriceStock && last.volume < 1500 && last.volume >= 150) {
-    liquidityChannel = '💎 高價低張數豁免 (≥300元且≥150張)';
-  } else if (turnoverYi >= 1.5) {
-    liquidityChannel = `🔥 高成交金額 (${turnoverYi}億 ≥ 1.5億)`;
-  } else if (last.volume >= 1500) {
-    liquidityChannel = `📊 高成交張數 (${last.volume.toLocaleString()}張 ≥ 1500張)`;
+
+  const minTurnoverYi = parseFloat(document.getElementById('fltTurnoverYi')?.value) || 1.5;
+  const minVolLots = parseFloat(document.getElementById('fltVolumeLots')?.value) || 1500;
+  const minHighPriceLots = parseFloat(document.getElementById('fltHighPriceLots')?.value) || 150;
+  const passDualFunnel = (turnoverYi >= minTurnoverYi) || (last.volume >= minVolLots && c >= 20) || (c >= 300 && last.volume >= minHighPriceLots);
+
+  let liquidityChannel = '未達門檻觀察';
+  if (isHighPriceStock && last.volume < minVolLots && last.volume >= minHighPriceLots) {
+    liquidityChannel = `💎 高價低張數豁免 (≥300元且≥${minHighPriceLots}張)`;
+  } else if (turnoverYi >= minTurnoverYi) {
+    liquidityChannel = `🔥 高成交金額 (${turnoverYi}億 ≥ ${minTurnoverYi}億)`;
+  } else if (last.volume >= minVolLots) {
+    liquidityChannel = `📊 高成交張數 (${last.volume.toLocaleString()}張 ≥ ${minVolLots}張)`;
   }
 
   // 籌碼指標
@@ -1102,10 +1115,10 @@ function analyzeStockV65(stockRaw) {
   if (baseTier !== 4) {
     if (regimeCode === 'R3' && stage === 1) {
       finalTier = Math.min(3, baseTier + 1);
-      regimeAdjustNote = '受大盤 Regime 3 調控，右側突破自動降一檔';
+      regimeAdjustNote = '⚠️ 受大盤 Regime 3 (跌破月線短線拉回) 調控，右側突破倉位自動「降一檔」';
     } else if (regimeCode === 'R4' && stage === 1) {
       finalTier = (isNewHigh && mpsScore >= 90) ? 3 : 4;
-      regimeAdjustNote = finalTier === 3 ? '大盤 Risk-Off，僅因創高 S 級保留底倉' : '大盤 Risk-Off 強制暫停右側追高 (0%)';
+      regimeAdjustNote = finalTier === 3 ? '🚨 大盤 Risk-Off，僅因創高 S 級保留底倉' : '🚨 大盤 Risk-Off 強制暫停右側追高 (0%)';
     }
   }
 
@@ -1119,7 +1132,6 @@ function analyzeStockV65(stockRaw) {
   const finalAllocPct = isCategoryB ? tierAllocMap.pctB : tierAllocMap.pctA;
   const finalCapitalWan = ((state.baseCapital * finalAllocPct) / 100).toFixed(1);
 
-  // 執行該股過去半年 (185天) V6.5 策略進出回測
   const allocRatioForBt = (isCategoryB ? 1.0 : 0.7);
   const bt = runSixMonthBacktestV65(rows, isCategoryB, allocRatioForBt, state.baseCapital);
 
@@ -1132,15 +1144,16 @@ function analyzeStockV65(stockRaw) {
     : Number((tierBonus + (stage === 1 ? mpsScore * 0.65 + gemScore * 0.35 : gemScore * 0.65 + mpsScore * 0.35) + Math.min(25, Math.max(-15, rsAlpha20)) + btBonus).toFixed(2));
 
   const reasonBullets = [];
-  reasonBullets.push(`<b>雙軌流動性與狀態</b>：單日成交金額 <b>${turnoverYi} 億元</b>（成交 ${last.volume.toLocaleString()} 張，屬「${liquidityChannel}」）；目前處於 <b>Stage ${stage}</b>${breakoutModels.length ? ` 且觸發【${breakoutModels.join('＋')}】` : (signalATriggered ? ' 且觸發【訊號A 左側止跌試單】' : '')}。`);
+  reasonBullets.push(`<b>雙軌流動性與狀態</b>：最新資料日 <span class="text-cyan-300 font-mono">${latestBarDate}</span>，單日成交 <b>${turnoverYi} 億元</b>（${last.volume.toLocaleString()} 張，屬「${liquidityChannel}」）；目前處於 <b>Stage ${stage}</b>${breakoutModels.length ? ` 且觸發【${breakoutModels.join('＋')}】` : (signalATriggered ? ' 且觸發【訊號A 左側止跌試單】' : '')}。`);
   reasonBullets.push(`<b>雙引擎評分與超額 RS</b>：動能 MPS <b>${mpsScore}分 (${mpsRank})</b>、洗盤 GEM <b>${gemScore}分 (${gemLight.slice(0,2)})</b>；近 20 日相對大盤超額報酬 RS_Alpha20 達 <b>${rsAlpha20 >= 0 ? '+' : ''}${rsAlpha20.toFixed(2)}%</b>，量能倍數 ${volRatio.toFixed(2)}x MA60。`);
   reasonBullets.push(`<b>過去半年 V6.5 實戰回測驗證</b>：過去半年依策略進出場共交易 <b>${bt.trades.length} 次</b>，勝率 <b>${bt.winRatePct}%</b>，累計策略報酬率 <b class="text-emerald-300">${bt.totalReturnPct >= 0 ? '+' : ''}${bt.totalReturnPct.toFixed(2)}%</b>（最大回撤僅 -${bt.maxDrawdownPct.toFixed(2)}%）。`);
-  reasonBullets.push(`<b>倉位與風控執行</b>：ATR(14)% 為 ${atr14Pct.toFixed(2)}%（${categoryName}），核定配置【<b>${tierAllocMap.name} ${finalAllocPct}%（約 ${finalCapitalWan} 萬元）</b>】，初始停損鎖定於 <b class="text-rose-400">${initialStopPrice.toFixed(2)} 元 (-${initialStopPct.toFixed(1)}%)</b>。`);
+  reasonBullets.push(`<b>倉位與大盤調控執行</b>：ATR(14)% 為 ${atr14Pct.toFixed(2)}%（${categoryName}），${regimeCode !== 'R1' ? `<span class="text-amber-300">${regimeAdjustNote}</span>，` : ''}核定配置【<b>${tierAllocMap.name} ${finalAllocPct}%（約 ${finalCapitalWan} 萬元）</b>】，初始停損鎖定於 <b class="text-rose-400">${initialStopPrice.toFixed(2)} 元 (-${initialStopPct.toFixed(1)}%)</b>。`);
 
   return {
     id: stockRaw.id,
     name: stockRaw.name || STOCK_NAME_MAP[stockRaw.id] || `台股 ${stockRaw.id}`,
-    close: c, chgPct, lastVol: last.volume, turnoverYi, isHighPriceStock, liquidityChannel,
+    latestBarDate, syncedAt,
+    close: c, chgPct, lastVol: last.volume, turnoverYi, isHighPriceStock, passDualFunnel, liquidityChannel,
     sma5, sma10, sma20, sma60, sma120,
     ub, lb, bw, pre5Bw,
     volMa60, volRatio,
@@ -1168,7 +1181,7 @@ function analyzeStockV65(stockRaw) {
 }
 
 // ============================================================================
-// 4. 內建 60 強完整半年歷史生成引擎 (包含高價千金股低張數與真實波段走勢)
+// 4. 內建 60 強完整半年歷史生成引擎
 // ============================================================================
 function generate60StockHalfYearHistory(meta, seedIdx) {
   let rows = [];
@@ -1191,15 +1204,14 @@ function generate60StockHalfYearHistory(meta, seedIdx) {
     let dateStr = d.toISOString().slice(0, 10);
 
     let drift = 0;
-    // 設計過去半年具備 2~3 波明顯的「收斂突破 -> 主升 -> 跌破十日/月線停利 -> 再收斂突破」結構，讓回測引擎能真實觸發多次進出
     if (pattern === 'TIER1_S_BREAKOUT') {
       if (i > 105) drift = 0.001;
-      else if (i > 80) drift = 0.011; // 第一波主升
-      else if (i > 65) drift = -0.005; // 第一波回檔洗盤
-      else if (i > 35) drift = 0.009; // 第二波主升
-      else if (i > 16) drift = -0.003; // 第二波回檔綠燈洗盤
-      else if (i > 3) drift = 0.0005; // 布林帶寬極限收斂
-      else drift = 0.024; // 最新點火突破
+      else if (i > 80) drift = 0.011;
+      else if (i > 65) drift = -0.005;
+      else if (i > 35) drift = 0.009;
+      else if (i > 16) drift = -0.003;
+      else if (i > 3) drift = 0.0005;
+      else drift = 0.024;
     } else if (pattern === 'TIER1_A_BREAKOUT') {
       if (i > 95) drift = 0.001;
       else if (i > 70) drift = 0.009;
@@ -1209,9 +1221,9 @@ function generate60StockHalfYearHistory(meta, seedIdx) {
       else drift = 0.019;
     } else if (pattern === 'STAGE2_GREEN_A') {
       if (i > 85) drift = 0.002;
-      else if (i > 40) drift = 0.0085; // 前波大漲
-      else if (i > 2) drift = -0.0035; // 量縮回測季線 SMA60
-      else drift = 0.012; // 觸及季線/下軌收紅止跌訊號A
+      else if (i > 40) drift = 0.0085;
+      else if (i > 2) drift = -0.0035;
+      else drift = 0.012;
     } else if (pattern === 'TIER2_HALF') {
       if (i > 75) drift = 0.002;
       else if (i > 45) drift = 0.006;
@@ -1233,12 +1245,11 @@ function generate60StockHalfYearHistory(meta, seedIdx) {
     let high = Math.max(open, close) * (1 + pseudoRand() * (volPct / 220));
     let low = Math.min(open, close) * (1 - pseudoRand() * (volPct / 220));
 
-    // 高價股 (>=300元且標記 lowLotHighPrice) 平常張數僅 220~420 張，但成交金額高達數億元！
     let baseVol = meta.lowLotHighPrice ? 280 : (basePrice >= 300 ? 1800 : 8500);
     let vol = baseVol * (0.82 + pseudoRand() * 0.36);
 
     if (i === 0) vol = baseVol * endVolRatio;
-    else if (i === 98 || i === 60) vol = baseVol * 1.85; // 歷史突破日帶量
+    else if (i === 98 || i === 60) vol = baseVol * 1.85;
     else if (pattern === 'STAGE2_GREEN_A' && i <= 6) vol = baseVol * 0.36;
     else if (pattern.includes('BREAKOUT') && i <= 12 && i >= 3) vol = baseVol * 0.38;
 
@@ -1260,12 +1271,21 @@ function generate60StockHalfYearHistory(meta, seedIdx) {
 
 function loadDefault60StocksDataset() {
   try {
-    const cached = localStorage.getItem('gem_v65_cached_stocks_v3');
+    const cached = localStorage.getItem('gem_v65_cached_stocks_v4');
+    const cachedMeta = localStorage.getItem('gem_v65_cached_meta_v4');
     if (cached) {
       const parsed = JSON.parse(cached);
-      if (Array.isArray(parsed) && parsed.length >= 20) {
+      if (Array.isArray(parsed) && parsed.length >= 10) {
         window._rawStockStore = parsed;
-        document.getElementById('dataSourceIndicator').textContent = `來源：本機快取半年歷史庫 (${parsed.length} 檔)`;
+        if (cachedMeta) {
+          const metaObj = JSON.parse(cachedMeta);
+          state.isRealApiData = !!metaObj.isRealApiData;
+          state.lastSyncCompletedAt = metaObj.lastSyncCompletedAt || null;
+          state.marketDataLatestDate = metaObj.marketDataLatestDate || null;
+          if (metaObj.currentRegime) {
+            state.currentRegime = { ...state.currentRegime, ...metaObj.currentRegime };
+          }
+        }
         recalculateAll();
         return;
       }
@@ -1275,6 +1295,7 @@ function loadDefault60StocksDataset() {
   const builtIn60 = STOCK_META_60.map((meta, idx) => ({
     id: meta.id,
     name: meta.name,
+    syncedAt: '內建預設範例庫',
     history: generate60StockHalfYearHistory(meta, idx + 1),
     majorHolder4WChg: meta.major,
     marginUtil: meta.mUtil,
@@ -1285,19 +1306,22 @@ function loadDefault60StocksDataset() {
     pullbackLowMaintRatio: meta.major >= 0.5 ? 131 : 142
   }));
 
+  state.isRealApiData = false;
+  state.lastSyncCompletedAt = null;
+  state.marketDataLatestDate = builtIn60[0]?.history[builtIn60[0].history.length - 1]?.date || '-';
   window._rawStockStore = builtIn60;
-  document.getElementById('dataSourceIndicator').textContent = `來源：內建 60 強完整半年回測庫 (60 檔)`;
   recalculateAll();
 }
 
 function resetToBuiltIn60() {
-  localStorage.removeItem('gem_v65_cached_stocks_v3');
+  localStorage.removeItem('gem_v65_cached_stocks_v4');
+  localStorage.removeItem('gem_v65_cached_meta_v4');
   toggleModal('settingsModal');
   loadDefault60StocksDataset();
 }
 
 // ============================================================================
-// 5. 兩階段全市場動態漏斗 & 全數合格股票自動續傳引擎 (Stage A 60強 -> Stage B 全市場)
+// 5. 兩階段全市場動態漏斗 & 全數合格股票自動續傳引擎
 // ============================================================================
 async function fetchFinMindDataset(dataset, data_id, start_date, token) {
   const url = new URL('https://api.finmindtrade.com/api/v4/data');
@@ -1314,11 +1338,9 @@ async function fetchFinMindDataset(dataset, data_id, start_date, token) {
   return json.data;
 }
 
-// 取得全市場單日快照，篩出所有符合「成交金額 >= 1.5億 OR 成交張數 >= 1500張 OR (股價 >= 300元 且 張數 >= 150張)」的股票代號
 async function fetchAllQualifiedMarketStocks(minTurnoverYi, minVolLots, minHighPriceLots, token, subLogEl) {
   let qualifiedMap = new Map();
 
-  // 嘗試管道 1：TWSE 證交所 OpenAPI 全市場每日收盤行情 (免 Token、一次回傳全上市股票)
   try {
     subLogEl.textContent = '正在連線證交所 (TWSE OpenAPI) 抓取全市場最新單日收盤快照...';
     const res = await fetch('https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL');
@@ -1342,10 +1364,9 @@ async function fetchAllQualifiedMarketStocks(minTurnoverYi, minVolLots, minHighP
       });
     }
   } catch (e) {
-    console.warn('TWSE OpenAPI 直接連線受瀏覽器 CORS 限制，改用 FinMind 全市場快照:', e.message);
+    console.warn('TWSE OpenAPI CORS 略過:', e.message);
   }
 
-  // 嘗試管道 2：TPEx 櫃買中心 OpenAPI 全上櫃每日收盤行情
   try {
     const resOtc = await fetch('https://www.tpex.org.tw/openapi/v1/tpex_mainboard_daily_close_quotes');
     if (resOtc.ok) {
@@ -1371,7 +1392,6 @@ async function fetchAllQualifiedMarketStocks(minTurnoverYi, minVolLots, minHighP
     console.warn('TPEx OpenAPI CORS 略過:', e.message);
   }
 
-  // 嘗試管道 3：若瀏覽器阻擋 TWSE/TPEx CORS，透過 FinMind 抓取最近一個交易日全市場行情
   if (qualifiedMap.size < 30) {
     try {
       subLogEl.textContent = '正在透過 FinMind 取得全市場股票清單與單日快照...';
@@ -1383,7 +1403,6 @@ async function fetchAllQualifiedMarketStocks(minTurnoverYi, minVolLots, minHighP
         }
       });
 
-      // 找最近 5 天日期抓全市場單日行情
       const d = new Date();
       d.setDate(d.getDate() - 5);
       const recentStart = d.toISOString().slice(0, 10);
@@ -1409,7 +1428,6 @@ async function fetchAllQualifiedMarketStocks(minTurnoverYi, minVolLots, minHighP
     }
   }
 
-  // 將物件轉為陣列並依「成交金額 (turnoverYi)」由大到小排序
   const list = Array.from(qualifiedMap.values());
   list.sort((a, b) => b.turnoverYi - a.turnoverYi);
   return list;
@@ -1446,13 +1464,12 @@ async function startTwoStageMarketScan() {
   const autoContinueStageB = document.getElementById('autoContinueStageB')?.checked ?? true;
   const fastPriceOnly = document.getElementById('fastPriceOnlyMode')?.checked ?? true;
 
-  // 過去半年 (185天) 起始日
   const d = new Date();
   d.setDate(d.getDate() - 185);
   const startDate = d.toISOString().slice(0, 10);
 
   try {
-    // 1. 先更新大盤 TAIEX 半年數據
+    // 1. 先更新大盤 TAIEX 半年數據並精準計算 SMA20、週SMA5、週OSC 與氣候狀態
     subLog.textContent = `正在下載台灣加權指數 (TAIEX) 自 ${startDate} 起之半年歷史序列...`;
     try {
       const taiexRows = await fetchFinMindDataset('TaiwanStockPrice', 'TAIEX', startDate, token);
@@ -1460,31 +1477,40 @@ async function startTwoStageMarketScan() {
         const tCloses = taiexRows.map(r => Number(r.close));
         const tSma20 = calcSMA(tCloses, 20);
         const tn = tCloses.length;
-        const tLast = tCloses[tn - 1], tPrev = tCloses[tn - 2], tSma20Last = tSma20[tn - 1];
+        const tLast = tCloses[tn - 1];
+        const tPrev = tCloses[tn - 2];
+        const tSma20Last = tSma20[tn - 1];
+        const tSma20Prev = tSma20[tn - 2] || tSma20Last;
         const tRet20 = ((tLast - tCloses[Math.max(0, tn - 21)]) / tCloses[Math.max(0, tn - 21)]) * 100;
+
         const wCloses = [];
         for (let i = tn - 1; i >= 0; i -= 5) wCloses.unshift(tCloses[i]);
         const wSma5 = calcSMA(wCloses, 5);
         const wMacd = calcMACD(wCloses);
         const wn = wCloses.length;
-        const wBull = (wCloses[wn - 1] >= (wSma5[wn - 1] || 0)) || (wMacd.osc[wn - 1] >= 0);
+        const wSma5Last = wSma5[wn - 1] || wCloses[wn - 1];
+        const wOscLast = wMacd.osc[wn - 1] || 0;
+        const wBull = (wCloses[wn - 1] >= wSma5Last) || (wOscLast >= 0);
 
+        const consec2Below = (tLast < tSma20Last) && (tPrev < tSma20Prev);
+        const dropBelowSma20Pct = tLast < tSma20Last ? ((tSma20Last - tLast) / tSma20Last) * 100 : 0;
+
+        state.currentRegime.taiexDate = taiexRows[tn - 1].date;
         state.currentRegime.taiexClose = tLast;
         state.currentRegime.taiexChgPct = ((tLast - tPrev) / tPrev) * 100;
         state.currentRegime.taiexSma20 = tSma20Last;
         state.currentRegime.taiexAboveSma20 = tLast >= tSma20Last;
-        state.currentRegime.taiexBreak2DaysOr2Pct = (tLast < tSma20Last && tPrev < tSma20[tn - 2]) || (((tSma20Last - tLast) / tSma20Last) * 100 >= 2.0);
+        state.currentRegime.taiexConsec2DaysBelow = consec2Below;
+        state.currentRegime.taiexSingleDropPctBelowSma20 = dropBelowSma20Pct;
+        state.currentRegime.taiexBreak2DaysOr2Pct = consec2Below || (dropBelowSma20Pct >= 2.0) || (tLast < tSma20Last);
+        state.currentRegime.taiexWeeklySma5 = wSma5Last;
         state.currentRegime.taiexWeeklyBull = wBull;
-        state.currentRegime.taiexWeeklyOsc = wMacd.osc[wn - 1] || 0;
+        state.currentRegime.taiexWeeklyOsc = wOscLast;
         state.currentRegime.taiexRet20 = tRet20;
-
-        document.getElementById('taiexClose').textContent = tLast.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        document.getElementById('taiexChg').textContent = `${state.currentRegime.taiexChgPct >= 0 ? '+' : ''}${state.currentRegime.taiexChgPct.toFixed(2)}%`;
-        document.getElementById('taiexDate').textContent = `最新交易日：${taiexRows[tn - 1].date}`;
-        document.getElementById('taiexSma20').textContent = state.currentRegime.taiexAboveSma20 ? '守穩月線上' : '跌破月線 SMA20';
-        document.getElementById('taiexRet20').textContent = `${tRet20 >= 0 ? '+' : ''}${tRet20.toFixed(2)}%`;
       }
-    } catch (_) {}
+    } catch (e) {
+      console.warn('TAIEX API 更新異常:', e.message);
+    }
 
     // 2. 取得第一階段 60 強名單 + 全市場符合雙軌流動性濾網之完整合格名單
     const seedCodes = document.getElementById('customScanCodesInput').value
@@ -1492,8 +1518,6 @@ async function startTwoStageMarketScan() {
 
     const marketQualifiedList = await fetchAllQualifiedMarketStocks(minTurnoverYi, minVolLots, minHighPriceLots, token, subLog);
 
-    // 組合兩階段佇列：
-    // Stage A (前 60 檔)：優先納入使用者 60 強種子池與全市場成交金額最高前 60 強
     const stageASet = new Set(seedCodes.slice(0, 60));
     for (const item of marketQualifiedList) {
       if (stageASet.size >= 60) break;
@@ -1501,7 +1525,6 @@ async function startTwoStageMarketScan() {
     }
     const stageACodes = Array.from(stageASet);
 
-    // Stage B (全市場剩餘所有符合「金額>=1.5億 OR 張數>=1500 OR 高價>=300元且>=150張」之股票)
     const stageBCodes = [];
     if (autoContinueStageB) {
       marketQualifiedList.forEach(item => {
@@ -1511,11 +1534,8 @@ async function startTwoStageMarketScan() {
 
     const fullQueue = [...stageACodes, ...stageBCodes];
     funnelStats.textContent = `Stage A 優先池: ${stageACodes.length} 檔 ｜ Stage B 合格擴充池: ${stageBCodes.length} 檔 (總計 ${fullQueue.length} 檔)`;
-    document.getElementById('funnelPassCount').textContent = `共 ${fullQueue.length} 檔合格`;
 
     const downloadedList = [];
-    const existingBackupMap = {};
-    (window._rawStockStore || []).forEach(s => { existingBackupMap[s.id] = s; });
 
     for (let idx = 0; idx < fullQueue.length; idx++) {
       while (state.pauseScanFlag && !state.abortScanFlag) {
@@ -1547,7 +1567,6 @@ async function startTwoStageMarketScan() {
         if (!priceData || priceData.length < 25) continue;
 
         let instMap = {};
-        // 若未勾選極速模式，則額外抓三大法人表
         if (!fastPriceOnly) {
           try {
             const instData = await fetchFinMindDataset('TaiwanStockInstitutionalInvestorsBuySell', sid, startDate, token);
@@ -1558,11 +1577,10 @@ async function startTwoStageMarketScan() {
           } catch (_) {}
         }
 
-        const history = priceData.map((r, i) => {
+        const history = priceData.map(r => {
           const c = Number(r.close);
           const o = Number(r.open) || c;
           const volLots = Math.round((Number(r.Trading_Volume) || 0) / 1000);
-          // 若極速模式未抓法人表，依當日價量推估法人動向
           const estInst = instMap[r.date] !== undefined ? instMap[r.date] : (c >= o ? Math.round(volLots * 0.12) : -Math.round(volLots * 0.08));
           return {
             date: r.date,
@@ -1578,7 +1596,6 @@ async function startTwoStageMarketScan() {
         const lastRow = history[history.length - 1];
         const turnoverYi = (lastRow.close * lastRow.volume * 1000) / 1e8;
 
-        // 第二階段再次嚴格驗證雙軌流動性門檻：成交金額 >= 1.5億 OR 張數 >= 1500張 OR (股價 >= 300元 且 張數 >= 150張)
         const passLiquidity = (turnoverYi >= minTurnoverYi) || (lastRow.volume >= minVolLots && lastRow.close >= 20) || (lastRow.close >= 300 && lastRow.volume >= minHighPriceLots);
         if (!isStageA && !passLiquidity) {
           continue;
@@ -1588,10 +1605,12 @@ async function startTwoStageMarketScan() {
         const avgCost60 = closes60.reduce((a, b) => a + b, 0) / closes60.length;
         const estMaintRatio = Math.round(Math.max(128, Math.min(210, (lastRow.close / (avgCost60 * 0.6)) * 100)));
         const ret20 = ((lastRow.close - history[Math.max(0, history.length - 21)].close) / history[Math.max(0, history.length - 21)].close) * 100;
+        const nowStr = formatNowTimestamp();
 
         downloadedList.push({
           id: sid,
           name: sname,
+          syncedAt: nowStr,
           history,
           majorHolder4WChg: ret20 >= 5 ? 1.85 : ret20 >= 0 ? 0.95 : -0.8,
           marginUtil: lastRow.close >= 500 ? 6.5 : 11.2,
@@ -1602,10 +1621,12 @@ async function startTwoStageMarketScan() {
           pullbackLowMaintRatio: 132
         });
 
-        // 每完成 5 檔或完成第一階段 60 強當下，立即刷新畫面與回測統計
+        state.isRealApiData = true;
+        state.lastSyncCompletedAt = nowStr;
+        state.marketDataLatestDate = lastRow.date;
+
         if (downloadedList.length % 5 === 0 || idx === stageACodes.length - 1 || idx === fullQueue.length - 1) {
           window._rawStockStore = downloadedList.slice();
-          document.getElementById('dataSourceIndicator').textContent = `來源：API 實時下載 (${downloadedList.length} 檔已分析)`;
           recalculateAll();
         }
 
@@ -1621,8 +1642,16 @@ async function startTwoStageMarketScan() {
 
     if (downloadedList.length > 0) {
       window._rawStockStore = downloadedList;
+      state.isRealApiData = true;
+      state.lastSyncCompletedAt = formatNowTimestamp();
       try {
-        localStorage.setItem('gem_v65_cached_stocks_v3', JSON.stringify(downloadedList));
+        localStorage.setItem('gem_v65_cached_stocks_v4', JSON.stringify(downloadedList));
+        localStorage.setItem('gem_v65_cached_meta_v4', JSON.stringify({
+          isRealApiData: state.isRealApiData,
+          lastSyncCompletedAt: state.lastSyncCompletedAt,
+          marketDataLatestDate: state.marketDataLatestDate,
+          currentRegime: state.currentRegime
+        }));
       } catch (_) {}
       recalculateAll();
     }
@@ -1634,49 +1663,93 @@ async function startTwoStageMarketScan() {
 }
 
 // ============================================================================
-// 6. 大盤氣候、全域 60 強半年回測統計與介面渲染
+// 6. 大盤氣候、真實時間戳記與介面渲染 (修復大盤 SMA20 與 Regime 1~4 同步問題)
 // ============================================================================
 function evaluateMarketRegime() {
   const mode = document.getElementById('regimeSelector')?.value || 'AUTO';
   let r = state.currentRegime;
-  let code = mode !== 'AUTO' ? mode : (
-    (!r.taiexBreak2DaysOr2Pct && r.taiexAboveSma20)
-      ? (r.taiexWeeklyBull ? 'R1' : 'R2')
-      : (r.taiexWeeklyBull ? 'R3' : 'R4')
-  );
+
+  // 客觀判定準則：
+  // 若大盤跌破月線 SMA20 (r.taiexAboveSma20 === false)，則 dailyOk = false，
+  // 週線多頭時必進入 R3 (短線拉回 Caution)，週線轉空時必進入 R4 (全面 Risk-Off)！
+  const dailyOk = r.taiexAboveSma20 && !r.taiexBreak2DaysOr2Pct;
+  const weeklyOk = r.taiexWeeklyBull;
+
+  let code = 'R1';
+  if (mode !== 'AUTO') {
+    code = mode;
+  } else {
+    if (dailyOk && weeklyOk) code = 'R1';
+    else if (dailyOk && !weeklyOk) code = 'R2';
+    else if (!dailyOk && weeklyOk) code = 'R3';
+    else code = 'R4';
+  }
 
   const meta = {
     'R1': {
       name: 'Regime 1：全面 Risk-On (順風主戰場)',
       desc: '大盤日線守穩 SMA20 且 大盤週線多頭（週收盤 ≥ 週SMA5 或 週OSC ≥ 0）｜四檔固定倉位 100% 正常執行，開放第一檔滿倉（100% / 70%）與保本加碼。',
       rightAuthText: '100% 正常開放',
-      pillClass: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+      pillClass: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40',
+      iconBoxClass: 'w-11 h-11 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center shrink-0'
     },
     'R2': {
       name: 'Regime 2：震盪 Risk-Neutral (個股 Alpha 期)',
       desc: '大盤日線守穩 SMA20 但 大盤週線處於整理（週 MACD OSC < 0）｜四檔固定倉位 100% 正常執行，優先鎖定 RS 相對強度領先創高之個股。',
       rightAuthText: '100% 正常開放',
-      pillClass: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
+      pillClass: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40',
+      iconBoxClass: 'w-11 h-11 rounded-xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center shrink-0'
     },
     'R3': {
       name: 'Regime 3：短線拉回 Caution (多頭急跌洗盤)',
-      desc: '大盤日線跌破 SMA20 但 週線維持多頭｜新開右側突破倉位自動「降一檔」（滿倉改半倉 50%/35%），開放 Stage 2 綠燈股訊號 A 左側試單。',
-      rightAuthText: '自動降一檔',
-      pillClass: 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+      desc: '大盤日線跌破 SMA20 但 大盤週線仍維持多頭（週OSC ≥ 0）｜新開右側突破倉位自動「降一檔」（滿倉改半倉 50%/35%），開放 Stage 2 綠燈股訊號 A 左側試單。',
+      rightAuthText: '右側突破自動降一檔 (50%/35%)',
+      pillClass: 'bg-amber-500/20 text-amber-300 border-amber-500/40',
+      iconBoxClass: 'w-11 h-11 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center shrink-0'
     },
     'R4': {
       name: 'Regime 4：全面 Risk-Off (系統性崩盤防禦)',
-      desc: '大盤日線正式跌破 SMA20 且 週線同步轉空｜全面暫停 Stage 1 右側追高突破（強制 0%），僅准許 Stage 2 綠燈抗跌股觸及季線/下軌時執行第三檔左側試單（25%~30%）。',
-      rightAuthText: '暫停右側追高',
-      pillClass: 'bg-rose-500/20 text-rose-300 border-rose-500/40'
+      desc: '大盤日線正式跌破 SMA20 且 大盤週線同步轉空｜全面暫停 Stage 1 右側追高突破（強制 0%），僅准許 Stage 2 綠燈抗跌股觸及季線/下軌時執行第三檔左側試單（25%~30%）。',
+      rightAuthText: '暫停右側追高 (僅准綠燈左側試單)',
+      pillClass: 'bg-rose-500/20 text-rose-300 border-rose-500/40',
+      iconBoxClass: 'w-11 h-11 rounded-xl bg-rose-500/20 border border-rose-500/40 flex items-center justify-center shrink-0'
     }
   }[code];
 
-  r.code = code; r.name = meta.name; r.desc = meta.desc; r.rightAuthText = meta.rightAuthText;
+  r.code = code;
+  r.name = meta.name;
+  r.desc = meta.desc;
+  r.rightAuthText = meta.rightAuthText;
+
+  // 同步更新頂部所有大盤指標卡片 (確保不會殘留舊預設值 23,110)
   const pill = document.getElementById('regimeStatusPill');
   pill.className = `px-2.5 py-0.5 text-xs font-bold rounded-full border ${meta.pillClass}`;
   pill.textContent = r.name;
+  document.getElementById('regimeIconBox').className = meta.iconBoxClass;
   document.getElementById('regimeDescText').textContent = r.desc;
+
+  const sma20BiasPct = r.taiexSma20 > 0 ? ((r.taiexClose - r.taiexSma20) / r.taiexSma20) * 100 : 0;
+  document.getElementById('taiexClose').textContent = r.taiexClose.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  document.getElementById('taiexChg').textContent = `${r.taiexChgPct >= 0 ? '+' : ''}${r.taiexChgPct.toFixed(2)}%`;
+  document.getElementById('taiexChg').className = `text-xs font-semibold ${r.taiexChgPct >= 0 ? 'text-rose-400' : 'text-emerald-400'}`;
+  document.getElementById('taiexDate').textContent = `數據日期：${r.taiexDate || state.marketDataLatestDate || '-'}`;
+
+  const sma20El = document.getElementById('taiexSma20');
+  sma20El.textContent = r.taiexAboveSma20 ? '守穩月線上' : '跌破月線 SMA20';
+  sma20El.className = `text-base font-bold ${r.taiexAboveSma20 ? 'text-emerald-400' : 'text-rose-400'}`;
+  document.getElementById('taiexSma20Sub').textContent = `SMA20: ${r.taiexSma20.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (乖離 ${sma20BiasPct >= 0 ? '+' : ''}${sma20BiasPct.toFixed(2)}%)`;
+
+  const wEl = document.getElementById('taiexWeeklyStatus');
+  wEl.textContent = r.taiexWeeklyBull ? '週線多頭' : '週線轉空/整理';
+  wEl.className = `text-base font-bold ${r.taiexWeeklyBull ? 'text-emerald-400' : 'text-rose-400'}`;
+  document.getElementById('taiexWeeklySub').textContent = `週SMA5: ${(r.taiexWeeklySma5 || r.taiexSma20).toLocaleString('en-US', { maximumFractionDigits: 0 })} | 週OSC: ${r.taiexWeeklyOsc >= 0 ? '+' : ''}${r.taiexWeeklyOsc.toFixed(1)}`;
+
+  const ret20El = document.getElementById('taiexRet20');
+  ret20El.textContent = `${r.taiexRet20 >= 0 ? '+' : ''}${r.taiexRet20.toFixed(2)}%`;
+  ret20El.className = `text-base font-bold ${r.taiexRet20 >= 0 ? 'text-amber-400' : 'text-emerald-400'}`;
+
+  document.getElementById('regimeDiagnosticLine').textContent =
+    `🔍 客觀判定明細：大盤日收 (${r.taiexClose.toFixed(2)}) ${r.taiexAboveSma20 ? '≥' : '<'} 月線 SMA20 (${r.taiexSma20.toFixed(2)}，乖離 ${sma20BiasPct.toFixed(2)}%) ＋ 週線 (${r.taiexWeeklyBull ? '多頭維持' : '轉弱'}) ➔ 自動觸發【${r.name}】(${r.rightAuthText})`;
 }
 
 function recalculateAll() {
@@ -1688,7 +1761,30 @@ function recalculateAll() {
   const rawList = window._rawStockStore || [];
   state.stocksData = rawList.map(raw => analyzeStockV65(raw));
 
-  // 預設依綜合評分排序
+  // 更新最新資料日期與同步完成時間頂部狀態列
+  const latestStockDate = state.stocksData[0]?.latestBarDate || state.currentRegime.taiexDate || '-';
+  state.marketDataLatestDate = latestStockDate;
+  document.getElementById('hdrMarketDataDate').textContent = `${latestStockDate} (加權指數: ${state.currentRegime.taiexDate || latestStockDate})`;
+
+  const syncEl = document.getElementById('hdrLastSyncTime');
+  const badgeEl = document.getElementById('hdrFreshnessBadge');
+  if (state.isRealApiData && state.lastSyncCompletedAt) {
+    syncEl.textContent = state.lastSyncCompletedAt;
+    badgeEl.className = 'px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold text-[10px]';
+    badgeEl.textContent = `✅ 真實 API 最新數據 (資料日: ${latestStockDate})`;
+    document.getElementById('dataSourceIndicator').textContent = `API 更新於 ${state.lastSyncCompletedAt.slice(5, 16)}`;
+  } else {
+    syncEl.textContent = '尚未執行 API 同步 (目前顯示內建 60 強範例)';
+    badgeEl.className = 'px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-semibold text-[10px]';
+    badgeEl.textContent = `⚠️ 內建預設庫 (請點右上角「啟動兩階段全市場漏斗」更新真實資料)`;
+    document.getElementById('dataSourceIndicator').textContent = `內建 60 強範例庫 (資料日: ${latestStockDate})`;
+  }
+
+  // 統計當前池中符合雙軌流動性門檻的檔數 (確保不再顯示 共 0 檔合格)
+  const passFunnelList = state.stocksData.filter(s => s.passDualFunnel);
+  const highPricePassList = state.stocksData.filter(s => s.isHighPriceStock && s.passDualFunnel);
+  document.getElementById('funnelPassCount').textContent = `共 ${passFunnelList.length} 檔合格 (高價 ${highPricePassList.length} 檔)`;
+
   state.stocksData.sort((a, b) => b.compositeScore - a.compositeScore);
   state.top10Stocks = state.stocksData.filter(s => !s.hardVetoTriggered).slice(0, 10);
 
@@ -1775,6 +1871,7 @@ function renderTop10Section() {
             <span class="px-2.5 py-0.5 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/40 font-extrabold text-xs">${rankBadge}</span>
             <span class="text-base font-bold text-white">${s.id} ${s.name}</span>
             <span class="text-sm font-bold ${s.chgPct >= 0 ? 'text-rose-400' : 'text-emerald-400'}">${s.close.toFixed(2)} (${s.chgPct >= 0 ? '+' : ''}${s.chgPct.toFixed(2)}%)</span>
+            <span class="text-[10px] text-cyan-300 font-mono bg-slate-950/80 px-1.5 py-0.5 rounded border border-slate-800">資料日: ${s.latestBarDate}</span>
           </div>
           <div class="flex items-center gap-1.5">
             <span class="px-2 py-0.5 rounded text-[11px] font-semibold ${s.isCategoryB ? 'bg-cyan-500/20 text-cyan-300' : 'bg-purple-500/20 text-purple-300'}">${s.categoryName}</span>
@@ -1782,7 +1879,6 @@ function renderTop10Section() {
           </div>
         </div>
 
-        <!-- Key Metrics & Backtest Strip -->
         <div class="grid grid-cols-5 gap-2 text-[11px] mb-3 bg-slate-950/70 p-2 rounded-lg border border-slate-800/80">
           <div>
             <span class="text-slate-400 block">動能 MPS</span>
@@ -1806,7 +1902,6 @@ function renderTop10Section() {
           </div>
         </div>
 
-        <!-- Detailed Reasons -->
         <div class="space-y-1 text-xs text-slate-300 leading-relaxed">
           ${s.reasonBullets.map(b => `<div class="flex items-start gap-1.5"><span class="text-amber-400 mt-0.5">•</span><span>${b}</span></div>`).join('')}
         </div>
@@ -1868,7 +1963,7 @@ function renderSummaryTable() {
             <span>${s.id} ${s.name}</span>
             ${s.isHighPriceStock ? `<span class="px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300 text-[10px]">高價</span>` : ''}
           </div>
-          <div class="text-[10px] text-slate-400">半年K線: ${s.history.length} 日</div>
+          <div class="text-[10px] text-cyan-300 font-mono">資料日: ${s.latestBarDate} (${s.history.length}日)</div>
         </td>
         <td class="py-3 px-3">
           <div class="font-bold text-white">${s.close.toFixed(2)}</div>
@@ -1919,19 +2014,19 @@ function renderDetailSection() {
   const tb = document.getElementById('detailTierBadge');
   tb.className = `px-2.5 py-1 rounded-lg border font-bold text-xs ${s.tierBadgeClass}`;
   tb.textContent = `${s.tierName} 核定部位 ${s.finalAllocPct}% (${s.finalCapitalWan} 萬元)`;
+  document.getElementById('detailDataTimeLabel').textContent = `最新K棒日期: ${s.latestBarDate} ｜ 同步時間: ${s.syncedAt}`;
 
   document.getElementById('detailTurnoverYi').textContent = s.turnoverYi;
   document.getElementById('pyrBaseCost').value = (s.close * 0.94).toFixed(1);
   document.getElementById('pyrCurrPrice').value = s.close.toFixed(1);
   calcPyramiding();
 
-  // 1. 六大結構報告
   const container = document.getElementById('sixStructureReport');
   container.innerHTML = `
     <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800">
       <div class="font-bold text-indigo-300 mb-0.5">0. 【大盤氣候狀態與雙軌流動性通道】</div>
       <p class="text-slate-300">
-        • 大盤氣候：${state.currentRegime.name}（20日基準 ${state.currentRegime.taiexRet20 >= 0 ? '+' : ''}${state.currentRegime.taiexRet20.toFixed(2)}%）｜流動性通道：<span class="text-cyan-300 font-semibold">${s.liquidityChannel}</span>。
+        • 大盤氣候：${state.currentRegime.name}（20日基準 ${state.currentRegime.taiexRet20 >= 0 ? '+' : ''}${state.currentRegime.taiexRet20.toFixed(2)}%）｜本檔調控：<span class="text-amber-300 font-semibold">${s.regimeAdjustNote}</span>。
       </p>
     </div>
     <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800">
@@ -1961,7 +2056,6 @@ function renderDetailSection() {
     </div>
   `;
 
-  // 2. 過去半年逐筆交易明細表
   document.getElementById('btDetailTitle').textContent = `[${s.id} ${s.name}] 過去半年 (185天) V6.5 策略進出明細`;
   document.getElementById('btDetailSummaryBadge').textContent = `累計報酬: ${s.bt.totalReturnPct >= 0 ? '+' : ''}${s.bt.totalReturnPct.toFixed(2)}% ｜ 勝率: ${s.bt.winRatePct}% (${s.bt.winCount}勝 ${s.bt.lossCount}敗) ｜ MDD: -${s.bt.maxDrawdownPct}%`;
 
@@ -2005,7 +2099,6 @@ function renderCharts(s) {
   const bollFull = calcBollinger(closes, 20, 2.0);
   const volMa60Full = calcSMA(vols, 60);
 
-  // 標記回測買進點與賣出點於 K 線圖上
   const buyPoints = new Array(n).fill(null);
   const sellPoints = new Array(n).fill(null);
   s.bt.trades.forEach(t => {
@@ -2013,7 +2106,7 @@ function renderCharts(s) {
     if (t.exitIdx >= 0 && t.exitIdx < n && !t.isOpen) sellPoints[t.exitIdx] = closes[t.exitIdx];
   });
 
-  document.getElementById('chartSubInfo').textContent = `完整半年日K (${n} 交易日) ｜ 綠點=策略買進、紅點=策略停利/停損`;
+  document.getElementById('chartSubInfo').textContent = `完整半年日K (${n} 日，最新: ${s.latestBarDate}) ｜ 綠點=買進、紅點=停利/停損`;
   document.getElementById('volRatioBadge').textContent = `最新量: ${s.lastVol.toLocaleString()} 張 (${s.volRatio.toFixed(2)}x MA60)`;
 
   const ctxP = document.getElementById('priceChartCanvas').getContext('2d');
@@ -2092,18 +2185,16 @@ function renderCharts(s) {
   });
 }
 
-// ============================================================================
-// 7. 匯出 / 複製報告與輔助工具
-// ============================================================================
 function exportTop10ReportText() {
   if (!state.top10Stocks.length) return;
   let lines = [
     `【GEM V6.5 旗艦級量化交易決策系統 — 台股 TOP 10 排行榜 & 半年回測報告】`,
-    `大盤氣候：${state.currentRegime.name} ｜ 已掃描合格總檔數：${state.stocksData.length} 檔`,
+    `市場資料最新交易日：${state.marketDataLatestDate} ｜ 系統更新完成時間：${state.lastSyncCompletedAt || '預設庫'}`,
+    `大盤氣候：${state.currentRegime.name} ｜ 已掃描總檔數：${state.stocksData.length} 檔`,
     `-------------------------------------------------------------------------`
   ];
   state.top10Stocks.forEach((s, idx) => {
-    lines.push(`🏆 第 ${idx + 1} 名：${s.id} ${s.name}｜收盤 ${s.close.toFixed(2)} 元 (${s.chgPct >= 0 ? '+' : ''}${s.chgPct.toFixed(2)}%)｜單日成交 ${s.turnoverYi} 億 (${s.lastVol}張)`);
+    lines.push(`🏆 第 ${idx + 1} 名：${s.id} ${s.name} (資料日:${s.latestBarDate})｜收盤 ${s.close.toFixed(2)} 元 (${s.chgPct >= 0 ? '+' : ''}${s.chgPct.toFixed(2)}%)｜單日成交 ${s.turnoverYi} 億 (${s.lastVol}張)`);
     lines.push(`   • 核定倉位：${s.tierName} ${s.finalAllocPct}% (投入 ${s.finalCapitalWan} 萬元)｜股性：${s.categoryName}`);
     lines.push(`   • 雙引擎分：Stage ${s.stage}｜MPS ${s.mpsScore}分 (${s.mpsRank})｜GEM ${s.gemScore}分｜RS_Alpha20 ${s.rsAlpha20 >= 0 ? '+' : ''}${s.rsAlpha20.toFixed(2)}%`);
     lines.push(`   • 半年回測：累計報酬 ${s.bt.totalReturnPct >= 0 ? '+' : ''}${s.bt.totalReturnPct.toFixed(2)}%｜勝率 ${s.bt.winRatePct}% (交易 ${s.bt.trades.length} 次)｜最大回撤 -${s.bt.maxDrawdownPct}%`);
@@ -2112,16 +2203,24 @@ function exportTop10ReportText() {
     lines.push(``);
   });
   navigator.clipboard.writeText(lines.join('\n')).then(() => {
-    alert('已將「TOP 10 選股與半年回測報告」複製到剪貼簿！');
+    alert('已將「TOP 10 選股與半年回測報告 (含最新時間戳記)」複製到剪貼簿！');
   });
 }
 
 function exportCurrentDataJson() {
-  const data = window._rawStockStore || [];
-  const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+  const payload = {
+    meta: {
+      isRealApiData: state.isRealApiData,
+      lastSyncCompletedAt: state.lastSyncCompletedAt || formatNowTimestamp(),
+      marketDataLatestDate: state.marketDataLatestDate,
+      currentRegime: state.currentRegime
+    },
+    stocks: window._rawStockStore || []
+  };
+  const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `GEM_V65_全市場半年回測庫_${new Date().toISOString().slice(0,10)}.json`;
+  a.download = `GEM_V65_全市場半年回測庫_${state.marketDataLatestDate || 'backup'}.json`;
   a.click();
 }
 
@@ -2132,13 +2231,24 @@ function importDataJson(event) {
   reader.onload = function(e) {
     try {
       const parsed = JSON.parse(e.target.result);
-      if (Array.isArray(parsed) && parsed.length > 0) {
+      if (Array.isArray(parsed)) {
         window._rawStockStore = parsed;
-        localStorage.setItem('gem_v65_cached_stocks_v3', JSON.stringify(parsed));
-        document.getElementById('dataSourceIndicator').textContent = `來源：匯入半年 JSON 庫 (${parsed.length} 檔)`;
-        toggleModal('settingsModal');
-        recalculateAll();
+        state.isRealApiData = true;
+        state.lastSyncCompletedAt = formatNowTimestamp();
+      } else if (parsed && Array.isArray(parsed.stocks)) {
+        window._rawStockStore = parsed.stocks;
+        if (parsed.meta) {
+          state.isRealApiData = !!parsed.meta.isRealApiData;
+          state.lastSyncCompletedAt = parsed.meta.lastSyncCompletedAt || formatNowTimestamp();
+          state.marketDataLatestDate = parsed.meta.marketDataLatestDate || null;
+          if (parsed.meta.currentRegime) {
+            state.currentRegime = { ...state.currentRegime, ...parsed.meta.currentRegime };
+          }
+        }
       }
+      localStorage.setItem('gem_v65_cached_stocks_v4', JSON.stringify(window._rawStockStore));
+      toggleModal('settingsModal');
+      recalculateAll();
     } catch (err) {
       alert('JSON 格式錯誤：' + err.message);
     }
@@ -2155,6 +2265,7 @@ function handleExcelUpload(event) {
       const data = new Uint8Array(e.target.result);
       const workbook = XLSX.read(data, { type: 'array' });
       const newRawList = [];
+      const nowStr = formatNowTimestamp();
       workbook.SheetNames.forEach(sheetName => {
         const ws = workbook.Sheets[sheetName];
         const jsonRows = XLSX.utils.sheet_to_json(ws, { defval: '' });
@@ -2177,6 +2288,7 @@ function handleExcelUpload(event) {
           newRawList.push({
             id: sheetName.split('_')[0].trim(),
             name: sheetName,
+            syncedAt: nowStr,
             history,
             majorHolder4WChg: 1.6, marginUtil: 8.5, maintRatio: 185
           });
@@ -2184,7 +2296,8 @@ function handleExcelUpload(event) {
       });
       if (newRawList.length > 0) {
         window._rawStockStore = newRawList;
-        document.getElementById('dataSourceIndicator').textContent = `來源：Excel 匯入 (${newRawList.length} 檔)`;
+        state.isRealApiData = true;
+        state.lastSyncCompletedAt = nowStr;
         recalculateAll();
       }
     } catch (err) {
