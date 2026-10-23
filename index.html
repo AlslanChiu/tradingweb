@@ -42,6 +42,35 @@
     .rank-gold { background: linear-gradient(135deg, rgba(245,158,11,0.25), rgba(217,119,6,0.08)); border-color: rgba(245,158,11,0.5); }
     .rank-silver { background: linear-gradient(135deg, rgba(148,163,184,0.22), rgba(100,116,139,0.08)); border-color: rgba(148,163,184,0.45); }
     .rank-bronze { background: linear-gradient(135deg, rgba(217,119,6,0.20), rgba(180,83,9,0.08)); border-color: rgba(217,119,6,0.4); }
+    /* V6.5.8 全域字體放大與高對比色塊護眼設計 */
+    html { font-size: 17px; }
+    @media (max-width: 768px) { html { font-size: 16px; } }
+    .text-\[10px\] { font-size: 0.78rem !important; line-height: 1.35 !important; }
+    .text-\[11px\] { font-size: 0.84rem !important; line-height: 1.4 !important; }
+    .text-xs { font-size: 0.90rem !important; line-height: 1.5 !important; }
+    .text-sm { font-size: 1.0rem !important; line-height: 1.55 !important; }
+    .text-base { font-size: 1.12rem !important; line-height: 1.6 !important; }
+    .text-lg { font-size: 1.25rem !important; }
+    .text-xl { font-size: 1.4rem !important; }
+    .action-block-buy {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(5, 150, 105, 0.12));
+      border: 2px solid rgba(16, 185, 129, 0.65);
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.18);
+    }
+    .action-block-sell {
+      background: linear-gradient(135deg, rgba(244, 63, 94, 0.28), rgba(225, 29, 72, 0.12));
+      border: 2px solid rgba(244, 63, 94, 0.75);
+      box-shadow: 0 0 15px rgba(244, 63, 94, 0.22);
+    }
+    .action-block-warn {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.26), rgba(217, 119, 6, 0.12));
+      border: 2px solid rgba(245, 158, 11, 0.7);
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.18);
+    }
+    .action-block-cash {
+      background: linear-gradient(135deg, rgba(71, 85, 105, 0.35), rgba(30, 41, 59, 0.25));
+      border: 2px solid rgba(148, 163, 184, 0.5);
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
@@ -56,7 +85,7 @@
         <div>
           <div class="flex items-center gap-2">
             <h1 class="text-lg font-bold tracking-tight text-white">GEM V6.5 全市場兩階段漏斗 × TOP 5 半年回測 × TOP 10 決策系統</h1>
-            <span class="px-2 py-0.5 text-[11px] font-semibold bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/40 rounded-full">V6.5.7 5+1槽位鎖倉輪動＋動態60強版</span>
+            <span class="px-2 py-0.5 text-[11px] font-semibold bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/40 rounded-full">V6.5.8 大字體護眼＋隔日價位色塊＋策略說明書版</span>
           </div>
           <!-- 顯眼雙時間狀態列 -->
           <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs mt-1 bg-slate-900/90 border border-cyan-500/30 rounded-lg px-3 py-1">
@@ -80,6 +109,19 @@
 
       <!-- Action Buttons -->
       <div class="flex flex-wrap items-center gap-2">
+        <!-- 字體縮放控制 -->
+        <div class="flex items-center bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-xs gap-1">
+          <span class="text-slate-400">字體:</span>
+          <button onclick="adjustRootFontSize(-1)" class="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold" title="縮小字體">A-</button>
+          <button onclick="adjustRootFontSize(1)" class="px-1.5 py-0.5 rounded bg-indigo-600/40 hover:bg-indigo-600/60 text-indigo-200 font-bold" title="放大字體">A+</button>
+        </div>
+
+        <!-- 📖 策略詳細說明書按鈕 -->
+        <button onclick="toggleModal('strategyGuideModal')" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border-2 border-amber-500/50 text-xs font-extrabold shadow-lg shadow-amber-500/15 transition">
+          <i data-lucide="book-open-check" class="w-4 h-4 text-amber-400"></i>
+          <span>📖 策略完整邏輯說明書</span>
+        </button>
+
         <div class="flex items-center bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs">
           <span class="text-slate-400 mr-1.5">100% 滿倉基準(萬):</span>
           <input id="baseCapitalInput" type="number" value="100" min="10" step="10" onchange="recalculateAll()" class="w-14 bg-transparent text-amber-400 font-bold focus:outline-none text-right">
@@ -154,8 +196,13 @@
             <p id="regimeDescText" class="text-xs text-slate-300 mt-1">
               大盤日線守穩 SMA20 且 週線多頭（週收盤 ≥ 週SMA5 或 週OSC ≥ 0）｜四檔固定倉位 100% 正常執行，開放第一檔滿倉（100% / 70%）與保本加碼。
             </p>
-            <div id="regimeDiagnosticLine" class="text-[11px] text-amber-300 font-mono mt-1">
+            <div id="regimeDiagnosticLine" class="text-xs text-amber-300 font-mono mt-1.5 font-semibold">
               🔍 客觀判定明細：載入中...
+            </div>
+            <!-- 頂層大盤色塊行動指令 -->
+            <div id="regimeActionColorBlock" class="mt-3 p-3 rounded-xl action-block-buy text-sm font-bold flex flex-wrap items-center justify-between gap-2">
+              <span id="regimeActionBlockTitle">載入中...</span>
+              <span id="regimeActionBlockRight" class="px-2.5 py-1 rounded-lg bg-slate-950/70 text-xs font-mono">載入中...</span>
             </div>
           </div>
         </div>
@@ -690,6 +737,139 @@
       <div class="flex justify-end gap-2 pt-3 border-t border-slate-800">
         <button onclick="toggleModal('slotEditorModal')" class="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 text-xs">取消</button>
         <button onclick="saveSlotFromModal()" class="px-5 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold">📌 確認鎖入槽位</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: 📖 GEM V6.5 旗艦級量化交易決策系統 — 完整策略說明書 (Strategy Full Guide Modal) -->
+  <div id="strategyGuideModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="glass-card rounded-2xl max-w-5xl w-full max-h-[90vh] flex flex-col border-2 border-amber-500/50 shadow-2xl">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between border-b border-slate-800 px-6 py-4 shrink-0 bg-slate-900/90 rounded-t-2xl">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center">
+            <i data-lucide="book-open-check" class="w-5 h-5 text-amber-400"></i>
+          </div>
+          <div>
+            <h3 class="text-lg font-extrabold text-white">📖 GEM V6.5 旗艦級量化交易決策系統 — 實戰策略完整說明書</h3>
+            <p class="text-xs text-slate-400">從頂層大盤氣候開關 ➔ 雙軌選股與股性分類 ➔ 雙引擎 100 分評分 ➔ 四檔倉位與隔日進出場執行鐵律</p>
+          </div>
+        </div>
+        <button onclick="toggleModal('strategyGuideModal')" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1">
+          <span>關閉說明</span>
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Modal Scrollable Body -->
+      <div class="p-6 overflow-y-auto space-y-6 text-sm leading-relaxed text-slate-200">
+
+        <!-- 壹、頂層大盤氣候總開關 -->
+        <div class="p-4 rounded-xl bg-slate-900/90 border border-slate-700 space-y-2">
+          <h4 class="text-base font-extrabold text-amber-300 flex items-center gap-2">
+            <span>壹、頂層大盤氣候總開關 (Market Regime Switch) — 決定能不能買、買多少</span>
+          </h4>
+          <p class="text-xs text-slate-300">
+            經台股跨截面實證，81.5% 的有效個股突破誕生於大盤守穩月線（SMA20）期間；當大盤日線與週線同步轉空時，個股突破後 20 日平均最大逆向回撤高達 -13.66%。因此系統於最頂層配置四大氣候開關：
+          </p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1 text-xs">
+            <div class="p-3 rounded-lg action-block-buy">
+              <div class="font-extrabold text-emerald-300">🟢 Regime 1：全面 Risk-On (順風主戰場)</div>
+              <p class="mt-1">• <b>判定</b>：大盤日收守穩月線 SMA20 且 週線多頭（週收 ≥ 週SMA5 或 週OSC ≥ 0）。</p>
+              <p>• <b>權限</b>：四檔固定倉位 100% 正常執行，開放第一檔滿倉（類別B 100% / 類別A 70%）與保本加碼。</p>
+            </div>
+            <div class="p-3 rounded-lg bg-cyan-950/40 border border-cyan-500/50">
+              <div class="font-extrabold text-cyan-300">🔵 Regime 2：震盪 Risk-Neutral (個股 Alpha 期)</div>
+              <p class="mt-1">• <b>判定</b>：大盤日收守穩 SMA20，但週線處於整理（週 MACD OSC &lt; 0）。</p>
+              <p>• <b>權限</b>：四檔倉位正常執行，優先鎖定近 20 日跑贏大盤（RS_Alpha20 ≥ +5%）之領頭羊。</p>
+            </div>
+            <div class="p-3 rounded-lg action-block-warn">
+              <div class="font-extrabold text-amber-300">⚠️ Regime 3：短線拉回 Caution (多頭急跌洗盤)</div>
+              <p class="mt-1">• <b>判定</b>：大盤日線跌破 SMA20，但週線仍維持多頭（週OSC ≥ 0）。</p>
+              <p>• <b>權限</b>：新開 Stage 1 右側突破倉位<b>自動「降一檔」</b>（滿倉改半倉 50%/35%），開放 Stage 2 綠燈股左側試單。</p>
+            </div>
+            <div class="p-3 rounded-lg action-block-sell">
+              <div class="font-extrabold text-rose-300">🚨 Regime 4：全面 Risk-Off (系統性崩盤防禦)</div>
+              <p class="mt-1">• <b>判定</b>：大盤日線跌破 SMA20 且 週線同步轉空（週收 &lt; 週SMA5 且 週OSC &lt; 0）。</p>
+              <p>• <b>權限</b>：<b>全面暫停 Stage 1 右側追高突破（強制空手 0%）</b>，僅准許 Stage 2 綠燈抗跌股回測季線/下軌時建立第三檔試單底倉（25%~30%）。</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 貳、選股池與股性自適應分類 -->
+        <div class="p-4 rounded-xl bg-slate-900/90 border border-slate-700 space-y-2">
+          <h4 class="text-base font-extrabold text-cyan-300">
+            貳、核心 60 強雙軌流動性濾網 × 股性二分法 (非 A 即 B 零盲區風險平價)
+          </h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+            <div class="p-3 rounded-lg bg-slate-950 border border-slate-800 space-y-1">
+              <div class="font-bold text-indigo-300">① 雙軌流動性門檻（保護高價千金股不漏網）</div>
+              <p>• <b>金額門檻</b>：單日成交金額 ≥ 1.5 億元；或</p>
+              <p>• <b>張數門檻</b>：單日成交張數 ≥ 1,500 張（且股價 ≥ 20 元）；或</p>
+              <p>• <b>高價股低張數豁免</b>：股價 ≥ 300 元 且 單日成交張數 ≥ 150 張。</p>
+              <p>• <b>歷史股性保護</b>：過去半年 V6.5 策略回測若為負報酬（&lt; 0% 假突破慣犯），強制降為觀望 0% 不排入 TOP 10。</p>
+            </div>
+            <div class="p-3 rounded-lg bg-slate-950 border border-slate-800 space-y-1">
+              <div class="font-bold text-purple-300">② 股性二分法與風險平價倉位上限</div>
+              <p>• <b>類別 B【穩健趨勢股】</b>：<code>ATR(14)% &lt; 5.5% 且 融資使用率 &lt; 15%</code> ➔ 滿倉基準上限 <b>100%</b>，主升期預設以<b>收盤實體跌破十日線 (SMA10)</b> 移動停利。</p>
+              <p>• <b>類別 A【高波洗盤股】</b>：<code>ATR(14)% ≥ 5.5% 或 融資使用率 ≥ 15%</code> ➔ 主力洗盤常深達 10%~15%，滿倉自動降為 <b>70%</b> 達成風險平價，主升期退守<b>月線 (SMA20) 或波段高點回撤 ≥ 15%</b> 結利。</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 參、市場狀態分流與雙引擎 100 分評分 -->
+        <div class="p-4 rounded-xl bg-slate-900/90 border border-slate-700 space-y-2">
+          <h4 class="text-base font-extrabold text-emerald-300">
+            參、市場狀態分流 (Stage 1 / Stage 2) × 三大硬否決 × 雙引擎 100 分量表
+          </h4>
+          <p class="text-xs text-slate-300">
+            • <b>🚫 三大硬否決濾網 (Hard Veto，觸發任一項直接 0% 剔除)</b>：(1) 大戶出貨否決（近4週千張大戶減 &gt;1.5% 且法人連賣）；(2) V型急殺禁追令（自20日高點跌 &gt;30% 且未量縮打底滿3日）；(3) 散戶接刀否決（破底過程維持率 &gt;155% 且融資逆勢暴增）。
+          </p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs pt-1">
+            <div class="p-3 rounded-lg bg-slate-950 border border-cyan-500/30 space-y-1">
+              <div class="font-bold text-cyan-300">🔥 Stage 1 主升擴張態：MPS-100 動能爆發量表 (股價守穩 SMA20)</div>
+              <p>1. <b>籌碼集中斜率 (20分)</b>：近4週大戶增 ≥+1.5% 且法人買超。</p>
+              <p>2. <b>量能爆發純度 (20分)</b>：成交量達 1.8~3.0 倍 MA60 且紅K飽滿。</p>
+              <p>3. <b>布林收斂潛能 (20分)</b>：突破前5日帶寬 ≤ 20% 且第一根穿上軌 UB。</p>
+              <p>4. <b>雙軋強度 (20分)</b>：融資維持率 ≥ 185% 且融資減少。</p>
+              <p>5. <b>形態與相對強度 RS (20分)</b>：創波段新高且 20 日超額報酬 RS_Alpha20 ≥ +5%。</p>
+              <p class="text-amber-300 font-semibold pt-1">★ 進場觸發模型：模型A (布林收斂點火)、模型C (跳空雙軋突破)、加碼點二 (橫盤突破前高)。</p>
+            </div>
+            <div class="p-3 rounded-lg bg-slate-950 border border-emerald-500/30 space-y-1">
+              <div class="font-bold text-emerald-300">🛡️ Stage 2 回檔沉澱態：GEM-100 洗盤健康度量表 (連2日破 SMA20)</div>
+              <p>1. <b>大戶持股定力 (20分)</b>：回檔期大戶降幅 ≤ 1.0% 或逆勢增加。</p>
+              <p>2. <b>融資清洗極值 (20分)</b>：維持率洗至 120%~135% 且融資減幅 ≥ 30%。</p>
+              <p>3. <b>量能極限萎縮 (20分)</b>：成交量萎縮至 ≤ 0.40 倍 MA60 窒息量。</p>
+              <p>4. <b>長期均線與抗跌 RS (20分)</b>：守穩季線 SMA60 / 半年線 SMA120 或下軌 LB。</p>
+              <p>5. <b>主導法人反轉 (20分)</b>：外資/投信賣超縮減或連 2~3 日轉買。</p>
+              <p class="text-amber-300 font-semibold pt-1">★ 左側試單觸發（訊號 A）：GEM ≥ 80 分【綠燈】+ 觸及季線/下軌 + 量 ≤ 0.65x MA60 + 法人轉買收紅。</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 肆、四檔倉位矩陣與進出場/換股鐵律 -->
+        <div class="p-4 rounded-xl bg-slate-900/90 border border-slate-700 space-y-2">
+          <h4 class="text-base font-extrabold text-rose-300">
+            肆、四檔倉位決策矩陣 × 隔日進出場價位鐵律 × 5+1 槽位換股原則
+          </h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+            <div class="p-3 rounded-lg bg-slate-950 border border-slate-800 space-y-1.5">
+              <div class="font-bold text-amber-300">📊 四檔固定倉位查表矩陣</div>
+              <p>• <b>第一檔【滿倉出擊 100% / 70%】</b>：MPS ≥ 80 分 (S/A級) + 前波綠燈洗淨或創波段新高。</p>
+              <p>• <b>第二檔【標準半倉 50% / 35%】</b>：MPS ≥ 80 分但前波黃燈；或 MPS 70~79 分且前波綠燈。</p>
+              <p>• <b>第三檔【試單底倉 30% / 25%】</b>：Stage 2 綠燈股觸發【訊號 A】左側抄底；或布林帶寬 ≤ 15% 極限收斂潛伏。</p>
+              <p>• <b>第四檔【空手觀望 0%】</b>：未達門檻、觸發硬否決、或受大盤 Risk-Off 保護強制空手。</p>
+            </div>
+            <div class="p-3 rounded-lg bg-slate-950 border border-slate-800 space-y-1.5">
+              <div class="font-bold text-rose-300">🎯 進出場價位與 5+1 槽位輪動鐵律</div>
+              <p>• <b>初始防守停損 (Initial Stop)</b>：<code>進場價 × (1 - max(8.0%, 1.5 × ATR(14)%))</code>，盤中或收盤跌破無條件停損出場。</p>
+              <p>• <b>拋物線噴發逃頂開關</b>：當布林帶寬 &gt; 40% 或 季線正乖離 &gt; 50% 時自動觸發，禁追高加碼，停利強制收緊為「連2日破 SMA5」。</p>
+              <p>• <b>零風險保本加碼 (Pyramiding)</b>：底倉浮盈必須 ≥ +5% 始准加碼，加碼後全數部位防守線強制上移至「加權平均總成本價」。</p>
+              <p>• <b>5+1 槽位換股原則</b>：正常守穩停利線之主升股<b>嚴禁因名次變動換股</b>！僅在觸發<b>「例外A (滿5日不漲時間停損)」</b>或<b>「例外B (第三檔試單底倉升級換入第一檔滿倉主升股)」</b>時准許主動換馬；當 ≥2 檔鎖死獲利 (≥+10%) 時解鎖<b>【第 6 彈性槽位】</b>。</p>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -2086,6 +2266,25 @@ function evaluateMarketRegime() {
 
   document.getElementById('regimeDiagnosticLine').textContent =
     `🔍 客觀判定明細：大盤日收 (${r.taiexClose.toFixed(2)}) ${r.taiexAboveSma20 ? '≥' : '<'} 月線 SMA20 (${r.taiexSma20.toFixed(2)}，乖離 ${sma20BiasPct.toFixed(2)}%) ＋ 週線 (${r.taiexWeeklyBull ? '多頭維持' : '轉弱'}) ➔ 自動觸發【${r.name}】(${r.rightAuthText})`;
+
+  const blockEl = document.getElementById('regimeActionColorBlock');
+  const titleEl = document.getElementById('regimeActionBlockTitle');
+  const rightEl = document.getElementById('regimeActionBlockRight');
+  if (blockEl && titleEl && rightEl) {
+    if (code === 'R1' || code === 'R2') {
+      blockEl.className = 'mt-3 p-3.5 rounded-xl action-block-buy text-emerald-100 text-sm font-bold flex flex-wrap items-center justify-between gap-2';
+      titleEl.innerHTML = `🟢 【大盤順風行動指令】目前處於 ${r.name}，全市場右側突破與四檔倉位 100% 正常開放執行！`;
+      rightEl.textContent = `大盤防守月線 SMA20：${r.taiexSma20.toFixed(0)} 點`;
+    } else if (code === 'R3') {
+      blockEl.className = 'mt-3 p-3.5 rounded-xl action-block-warn text-amber-100 text-sm font-bold flex flex-wrap items-center justify-between gap-2';
+      titleEl.innerHTML = `⚠️ 【大盤短線拉回降檔警示】大盤跌破月線 SMA20 (${r.taiexSma20.toFixed(0)})！所有 Stage 1 新開右側突破倉位強制「自動降一檔」（滿倉改半倉 50%/35%），並開放綠燈股左側試單！`;
+      rightEl.textContent = `重新站回 ${r.taiexSma20.toFixed(0)} 點恢復滿倉`;
+    } else {
+      blockEl.className = 'mt-3 p-3.5 rounded-xl action-block-sell text-rose-100 text-sm font-bold flex flex-wrap items-center justify-between gap-2';
+      titleEl.innerHTML = `🚨 【系統性崩盤防禦警報 (Risk-Off)】大盤日線與週線同步轉空！全面暫停 Stage 1 右側追高突破（強制空手 0%），僅准許 Stage 2 綠燈抗跌股觸及季線/下軌時執行第三檔左側試單 (25%~30%)！`;
+      rightEl.textContent = `大盤月線壓力：${r.taiexSma20.toFixed(0)} 點`;
+    }
+  }
 }
 
 function recalculateAll() {
@@ -2258,6 +2457,40 @@ function renderTop10Section() {
           </div>
         </div>
 
+        <!-- 🎯 醒目色塊：隔天應注意之進出場價位與行動指令 -->
+        <div class="mb-3 p-3 rounded-xl ${s.finalAllocPct > 0 ? (s.finalTier === 1 ? 'action-block-buy' : 'action-block-warn') : 'action-block-cash'}">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-2 mb-2">
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded font-extrabold text-xs ${s.finalAllocPct > 0 ? 'bg-emerald-500 text-slate-950' : 'bg-slate-600 text-white'}">
+                ${s.finalAllocPct > 0 ? `🎯 隔日買進訊號：核定投入 ${s.finalAllocPct}% (${s.finalCapitalWan}萬)` : `🛑 空手觀望 0% (未達進場條件或受大盤保護)`}
+              </span>
+              <span class="text-xs font-bold text-white">${s.breakoutModels.length ? `觸發：${s.breakoutModels.join('＋')}` : (s.signalATriggered ? '觸發：訊號A(回檔止跌左側試單)' : `狀態：Stage ${s.stage} 追蹤`)}</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+            <div class="bg-slate-950/85 p-2 rounded-lg border border-emerald-500/40">
+              <span class="text-[10px] text-emerald-300 block font-bold">① 隔日建議買進區間</span>
+              <strong class="text-emerald-400 font-mono text-sm">${s.stage === 1 ? `${(s.close * 0.99).toFixed(2)} ~ ${(s.close * 1.02).toFixed(2)}` : `${s.sma60.toFixed(2)} ~ ${s.close.toFixed(2)}`}</strong>
+              <span class="text-[10px] text-slate-400 block">${s.stage === 1 ? '突破不追高逾+2%' : '回測季線/下軌低接'}</span>
+            </div>
+            <div class="bg-slate-950/85 p-2 rounded-lg border border-rose-500/50">
+              <span class="text-[10px] text-rose-300 block font-bold">② 初始停損價 (破位必砍)</span>
+              <strong class="text-rose-400 font-mono text-sm">${s.initialStopPrice.toFixed(2)} 元</strong>
+              <span class="text-[10px] text-rose-300/80 block">最大容忍 -${s.initialStopPct.toFixed(1)}%</span>
+            </div>
+            <div class="bg-slate-950/85 p-2 rounded-lg border border-amber-500/50">
+              <span class="text-[10px] text-amber-300 block font-bold">③ 移動停利防守線</span>
+              <strong class="text-amber-300 font-mono text-sm">${s.isCategoryB ? `SMA10: ${s.sma10.toFixed(2)}` : `SMA20: ${s.sma20.toFixed(2)}`}</strong>
+              <span class="text-[10px] text-slate-400 block">${s.isCategoryB ? '類別B收盤破十日線出' : '類別A破月線或回撤15%'}</span>
+            </div>
+            <div class="bg-slate-950/85 p-2 rounded-lg border border-cyan-500/40">
+              <span class="text-[10px] text-cyan-300 block font-bold">④ 零風險保本加碼觸發價</span>
+              <strong class="text-cyan-300 font-mono text-sm">${(s.close * 1.05).toFixed(2)} 元</strong>
+              <span class="text-[10px] text-slate-400 block">底倉浮盈 ≥+5% 准許加碼</span>
+            </div>
+          </div>
+        </div>
+
         <div class="space-y-1 text-xs text-slate-300 leading-relaxed">
           ${s.reasonBullets.map(b => `<div class="flex items-start gap-1.5"><span class="text-amber-400 mt-0.5">•</span><span>${b}</span></div>`).join('')}
         </div>
@@ -2342,10 +2575,18 @@ function renderSummaryTable() {
           <div class="text-[10px] text-slate-400">勝率 ${s.bt.winRatePct}% (${s.bt.trades.length}次進出 | MDD -${s.bt.maxDrawdownPct}%)</div>
         </td>
         <td class="py-3 px-3">
-          <span class="px-2 py-0.5 rounded border text-xs font-bold ${s.tierBadgeClass}">${s.tierName} (${s.finalAllocPct}%)</span>
-          <div class="text-[10px] text-amber-300 mt-0.5">投入: ${s.finalCapitalWan} 萬</div>
+          <div class="p-1.5 rounded-lg border text-xs font-extrabold text-center ${s.finalAllocPct > 0 ? 'bg-emerald-500/25 text-emerald-200 border-emerald-400/60' : s.hardVetoTriggered ? 'bg-rose-500/25 text-rose-200 border-rose-500/60' : 'bg-slate-800/90 text-slate-300 border-slate-600'}">
+            ${s.finalAllocPct > 0 ? `🎯 買進 ${s.finalAllocPct}% (${s.finalCapitalWan}萬)` : s.hardVetoTriggered ? `🚫 否決剔除 0%` : `🛑 空手觀望 0%`}
+          </div>
+          <div class="text-[10px] text-slate-400 mt-0.5 text-center">${s.tierName}</div>
         </td>
-        <td class="py-3 px-3 font-bold text-rose-400">${s.initialStopPrice.toFixed(2)}</td>
+        <td class="py-3 px-3">
+          <div class="p-1.5 rounded bg-slate-950 border border-slate-800 font-mono text-xs space-y-0.5">
+            <div class="text-emerald-400 font-bold">進場: ${s.close.toFixed(2)}</div>
+            <div class="text-rose-400 font-bold">停損: ${s.initialStopPrice.toFixed(2)}</div>
+            <div class="text-amber-300 font-bold">停利: ${(s.isCategoryB ? s.sma10 : s.sma20).toFixed(2)}</div>
+          </div>
+        </td>
         <td class="py-3 px-4 max-w-xs text-[11px] text-slate-300">
           <div class="text-cyan-300 font-semibold">${s.liquidityChannel}</div>
           <div class="truncate text-slate-400">${s.tierReason}</div>
@@ -2404,11 +2645,41 @@ function renderDetailSection() {
         • MPS拆解：籌碼集中(${s.mpsBreakdown.mps1}) + 量能純度(${s.mpsBreakdown.mps2}) + 布林收斂(${s.mpsBreakdown.mps3}) + 雙軋強度(${s.mpsBreakdown.mps4}) + 形態與RS(${s.mpsBreakdown.mps5}，RS_Alpha20 ${s.rsAlpha20 >= 0 ? '+' : ''}${s.rsAlpha20.toFixed(2)}%)。
       </p>
     </div>
-    <div class="p-3 rounded-xl bg-indigo-950/30 border border-indigo-500/40">
-      <div class="font-bold text-amber-300 mb-0.5">5. 【第四層：四檔矩陣部位核定與半年回測結論】</div>
-      <p class="text-slate-200">
-        • 核定檔位：<span class="text-emerald-300 font-bold">${s.tierName} — ${s.finalAllocPct}%（投入 ${s.finalCapitalWan} 萬元）</span>｜原因：${s.tierReason}。
-      </p>
+    <!-- 隔日盤中交易執行價位大型色塊面板 -->
+    <div class="p-4 rounded-2xl ${s.finalAllocPct > 0 ? 'action-block-buy' : s.hardVetoTriggered ? 'action-block-sell' : 'action-block-cash'}">
+      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-white/15 pb-2.5 mb-3">
+        <div class="text-base font-extrabold text-white flex items-center gap-2">
+          <span>🎯 5. 【隔日交易執行計畫與關鍵進出場價位色塊】</span>
+        </div>
+        <span class="px-3 py-1 rounded-lg font-extrabold text-sm ${s.finalAllocPct > 0 ? 'bg-emerald-400 text-slate-950' : s.hardVetoTriggered ? 'bg-rose-500 text-white' : 'bg-slate-700 text-slate-200'}">
+          ${s.finalAllocPct > 0 ? `✅ 核定買進：${s.tierName} ${s.finalAllocPct}% (投入 ${s.finalCapitalWan} 萬)` : s.hardVetoTriggered ? `🚫 觸發硬否決：嚴禁買進 (0%)` : `🛑 訊號未齊備：空手觀望 (0%)`}
+        </span>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center mb-3">
+        <div class="bg-slate-950/90 p-3 rounded-xl border-2 border-emerald-500/50">
+          <div class="text-xs text-emerald-300 font-bold">🎯 隔日建議買進價位</div>
+          <div class="text-lg font-extrabold text-emerald-400 font-mono mt-1">${s.close.toFixed(2)} 元</div>
+          <div class="text-[11px] text-slate-300 mt-0.5">區間 ${(s.close * 0.99).toFixed(2)} ~ ${(s.close * 1.02).toFixed(2)}</div>
+        </div>
+        <div class="bg-slate-950/90 p-3 rounded-xl border-2 border-rose-500/60">
+          <div class="text-xs text-rose-300 font-bold">🚨 Initial Stop 初始停損價</div>
+          <div class="text-lg font-extrabold text-rose-400 font-mono mt-1">${s.initialStopPrice.toFixed(2)} 元</div>
+          <div class="text-[11px] text-rose-300 mt-0.5">跌破 -${s.initialStopPct.toFixed(2)}% 無條件退場</div>
+        </div>
+        <div class="bg-slate-950/90 p-3 rounded-xl border-2 border-amber-500/60">
+          <div class="text-xs text-amber-300 font-bold">🛡️ 波段移動停利防線</div>
+          <div class="text-lg font-extrabold text-amber-300 font-mono mt-1">${(s.isCategoryB ? s.sma10 : s.sma20).toFixed(2)} 元</div>
+          <div class="text-[11px] text-slate-300 mt-0.5">${s.isCategoryB ? '類別B：收盤破 SMA10 結利' : '類別A：收盤破 SMA20 結利'}</div>
+        </div>
+        <div class="bg-slate-950/90 p-3 rounded-xl border-2 border-cyan-500/50">
+          <div class="text-xs text-cyan-300 font-bold">➕ 零風險保本加碼價</div>
+          <div class="text-lg font-extrabold text-cyan-300 font-mono mt-1">${(s.close * 1.05).toFixed(2)} 元</div>
+          <div class="text-[11px] text-slate-300 mt-0.5">浮盈 ≥+5% 准許加碼並移保本</div>
+        </div>
+      </div>
+      <div class="text-xs text-white font-semibold bg-slate-950/70 p-2.5 rounded-lg border border-white/10">
+        📌 <b>決策原因與隔日叮嚀</b>：${s.tierReason}｜${s.trailingStopRule}
+      </div>
     </div>
   `;
 
@@ -2786,7 +3057,7 @@ function diagnoseSlotPosition(slotItem, bestNewCandidate) {
       adviceHtml: `<span class="text-rose-300 font-bold">出場原因：${exitWhy}。</span>${bestNewCandidate ? `建議結清釋出槽位，立即遞補買入今日最強未持倉股 <b>[${bestNewCandidate.id} ${bestNewCandidate.name}] (${bestNewCandidate.tierName})</b>！` : ''}`,
       canSwap: !!bestNewCandidate,
       swapType: 'EXIT_REPLACE',
-      currPrice, holdDays, profitPct, pnlWan, initStopPrice, trailLineName, isFreeRollLocked, stockObj: s
+      currPrice, holdDays, profitPct, pnlWan, initStopPrice, trailLinePriceVal: trailLinePrice, trailLineName, isFreeRollLocked, stockObj: s
     };
   }
 
@@ -2802,7 +3073,7 @@ function diagnoseSlotPosition(slotItem, bestNewCandidate) {
       adviceHtml: `本槽位為<b>第三檔試單底倉 (${slotItem.allocPct}%)</b> 且目前浮盈僅 <b>${profitPct >= 0 ? '+' : ''}${profitPct.toFixed(2)}%</b>；今日出現高確定性<b>第一檔滿倉主升股 [${bestNewCandidate.id} ${bestNewCandidate.name}] (MPS ${bestNewCandidate.mpsScore}分 ${bestNewCandidate.mpsRank})</b>，可選擇執行「例外B 升級換股」！`,
       canSwap: true,
       swapType: 'EXCEPTION_B_UPGRADE',
-      currPrice, holdDays, profitPct, pnlWan, initStopPrice, trailLineName, isFreeRollLocked, stockObj: s
+      currPrice, holdDays, profitPct, pnlWan, initStopPrice, trailLinePriceVal: trailLinePrice, trailLineName, isFreeRollLocked, stockObj: s
     };
   }
 
@@ -2816,7 +3087,7 @@ function diagnoseSlotPosition(slotItem, bestNewCandidate) {
       adviceHtml: `已持有 <b>${holdDays} 個交易日</b>但帳面僅 <b>${profitPct >= 0 ? '+' : ''}${profitPct.toFixed(2)}%</b>（點火失敗變成死錢）；建議執行「例外A 時間停損」，汰換為今日新點火強勢股 <b>[${bestNewCandidate.id} ${bestNewCandidate.name}] (MPS ${bestNewCandidate.mpsScore}分)</b>！`,
       canSwap: true,
       swapType: 'EXCEPTION_A_TIMESTOP',
-      currPrice, holdDays, profitPct, pnlWan, initStopPrice, trailLineName, isFreeRollLocked, stockObj: s
+      currPrice, holdDays, profitPct, pnlWan, initStopPrice, trailLinePriceVal: trailLinePrice, trailLineName, isFreeRollLocked, stockObj: s
     };
   }
 
@@ -2828,7 +3099,7 @@ function diagnoseSlotPosition(slotItem, bestNewCandidate) {
     adviceHtml: `股價 (${currPrice.toFixed(2)}) 穩守移動停利線 <b>${trailLineName}</b> 之上，即使當日未排進前五名，<b>嚴禁賣出換股</b>，請讓獲利奔跑直到跌破停利線！`,
     canSwap: false,
     swapType: null,
-    currPrice, holdDays, profitPct, pnlWan, initStopPrice, trailLineName, isFreeRollLocked, stockObj: s
+    currPrice, holdDays, profitPct, pnlWan, initStopPrice, trailLinePriceVal: trailLinePrice, trailLineName, isFreeRollLocked, stockObj: s
   };
 }
 
@@ -2982,8 +3253,31 @@ function renderLockedSlotsSection() {
               </div>
             </div>
 
-            <div class="text-[11px] text-slate-300 leading-relaxed">
+            <!-- 醒目色塊：重要提醒與進出場狀態 -->
+            <div class="p-2.5 rounded-lg mb-2.5 ${d.statusCode === 'EXIT_NOW' ? 'action-block-sell text-rose-100' : d.canSwap ? 'action-block-warn text-amber-100' : 'action-block-buy text-emerald-100'} text-xs leading-relaxed font-medium">
               ${d.adviceHtml}
+            </div>
+
+            <!-- 🎯 隔日盤中關鍵盯盤價位色塊 -->
+            <div class="p-2.5 rounded-lg bg-slate-950 border-2 border-indigo-500/40 space-y-1.5">
+              <div class="text-[11px] font-extrabold text-indigo-300 flex items-center justify-between">
+                <span>🎯 隔天盤中應注意之進出價位：</span>
+                <span class="text-cyan-300 font-mono">現價 ${d.currPrice.toFixed(2)} 元</span>
+              </div>
+              <div class="grid grid-cols-3 gap-1.5 text-center">
+                <div class="p-1.5 rounded bg-rose-950/60 border border-rose-500/50">
+                  <span class="text-[10px] text-rose-300 block font-semibold">🚨 初始停損價</span>
+                  <strong class="text-rose-400 font-mono text-sm">${d.initStopPrice.toFixed(2)}</strong>
+                </div>
+                <div class="p-1.5 rounded bg-amber-950/60 border border-amber-500/50">
+                  <span class="text-[10px] text-amber-300 block font-semibold">🛡️ 移動停利防線</span>
+                  <strong class="text-amber-300 font-mono text-sm">${d.trailLinePriceVal.toFixed(2)}</strong>
+                </div>
+                <div class="p-1.5 rounded ${d.profitPct >= 5.0 ? 'bg-emerald-950/70 border border-emerald-500/60' : 'bg-slate-900 border border-slate-700'}">
+                  <span class="text-[10px] ${d.profitPct >= 5.0 ? 'text-emerald-300' : 'text-slate-400'} block font-semibold">${d.profitPct >= 5.0 ? '➕ 准許保本加碼' : '🔒 滿+5%可加碼'}</span>
+                  <strong class="${d.profitPct >= 5.0 ? 'text-emerald-400' : 'text-slate-300'} font-mono text-sm">${(item.entryPrice * 1.05).toFixed(2)}</strong>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -3172,7 +3466,18 @@ function restoreDefault60Textarea() {
   }
 }
 
+
+function adjustRootFontSize(delta) {
+  const htmlEl = document.documentElement;
+  const current = parseFloat(window.getComputedStyle(htmlEl).fontSize) || 17;
+  const next = Math.max(14, Math.min(22, current + delta));
+  htmlEl.style.fontSize = next + 'px';
+  localStorage.setItem('gem_v65_root_font_size', String(next));
+}
+
 window.addEventListener('DOMContentLoaded', () => {
+  const savedFs = localStorage.getItem('gem_v65_root_font_size');
+  if (savedFs) document.documentElement.style.fontSize = savedFs + 'px';
   state.lockedSlots = loadLockedSlots();
   ensureLockedStocksInTextarea();
   document.getElementById('finmindTokenInput').value = localStorage.getItem('gem_finmind_token') || '';
