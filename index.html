@@ -56,7 +56,7 @@
         <div>
           <div class="flex items-center gap-2">
             <h1 class="text-lg font-bold tracking-tight text-white">GEM V6.5 全市場兩階段漏斗 × TOP 5 半年回測 × TOP 10 決策系統</h1>
-            <span class="px-2 py-0.5 text-[11px] font-semibold bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/40 rounded-full">V6.5.6 核心60強三表精準版</span>
+            <span class="px-2 py-0.5 text-[11px] font-semibold bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/40 rounded-full">V6.5.7 5+1槽位鎖倉輪動＋動態60強版</span>
           </div>
           <!-- 顯眼雙時間狀態列 -->
           <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs mt-1 bg-slate-900/90 border border-cyan-500/30 rounded-lg px-3 py-1">
@@ -216,6 +216,47 @@
           </div>
           <div id="dataSourceIndicator" class="text-[10px] text-amber-300 font-mono mt-0.5 truncate">已分析 60 檔</div>
         </div>
+      </div>
+    </section>
+
+    <!-- NEW SECTION: 💼 我的 5+1 實戰持倉槽位與智慧換股決策中心 (5+1 Slot Portfolio & Free-Roll Tracker) -->
+    <section class="glass-card rounded-2xl p-5 border border-amber-500/40">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4 mb-4">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center shrink-0">
+            <i data-lucide="briefcase" class="w-5 h-5 text-amber-400"></i>
+          </div>
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <h2 class="text-base font-bold text-white">💼 我的 5+1 實戰持倉槽位監控 & 智慧換股決策中心 (5-Slot + Free-Roll Slot 6)</h2>
+              <span id="slotSummaryBadge" class="px-2.5 py-0.5 text-[11px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-full">已鎖倉 0 / 5 槽位</span>
+              <span id="freeRollStatusBadge" class="px-2.5 py-0.5 text-[11px] font-semibold bg-slate-800 text-slate-400 border border-slate-700 rounded-full">🔒 第 6 彈性槽位 (需 ≥2 檔浮盈 ≥+10% 解鎖 Free-Roll)</span>
+            </div>
+            <p class="text-xs text-slate-400 mt-1">
+              📌 <b>鎖倉保送機制</b>：凡鎖入槽位之股票，執行「🔄 動態 60 強換血」或清空文字框時<b>強制 100% 保留於 Stage A 首位</b>，並自動診斷：<code class="text-emerald-300">🟢 主升續抱鎖倉</code>、<code class="text-amber-300">🔄 例外A(5日滯漲換股) / 例外B(第三檔試單升級第一檔滿倉)</code>、<code class="text-rose-300">🚨 跌破停利/停損出場</code>
+            </p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <button onclick="openAddSlotModal()" class="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-amber-600/20 transition">
+            <i data-lucide="plus-circle" class="w-4 h-4"></i>
+            <span>手動新增/管理鎖倉持股</span>
+          </button>
+          <button onclick="clearAllLockedSlots()" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs transition" title="清空所有槽位">
+            清空槽位
+          </button>
+        </div>
+      </div>
+
+      <!-- Global Swap Alert Banner (Shows when Slot is full/active and a new Tier 1 S/A stock is waiting) -->
+      <div id="globalSwapAdvisorBanner" class="hidden mb-4 p-3.5 rounded-xl bg-gradient-to-r from-amber-950/70 via-indigo-950/70 to-slate-900 border border-amber-500/50 text-xs">
+        <!-- Populated by JS -->
+      </div>
+
+      <!-- 6 Slots Grid (Slot 1 ~ Slot 5 + Slot 6 Free-Roll) -->
+      <div id="lockedSlotsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+        <!-- Populated by JS -->
       </div>
     </section>
 
@@ -552,8 +593,27 @@
         </div>
 
         <div>
-          <label class="block text-slate-400 text-[11px] mb-1">第一階段 60 強核心保送與高價種子池：</label>
-          <textarea id="customScanCodesInput" rows="2" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-[11px] text-slate-200 font-mono focus:outline-none focus:border-indigo-500">2330, 2317, 2454, 2382, 3017, 3264, 3105, 3661, 6669, 2345, 4979, 3450, 8069, 2408, 1303, 2308, 3037, 3035, 3443, 6285, 2368, 2383, 3324, 3533, 6187, 3131, 6488, 5274, 6515, 1519, 1513, 2603, 2881, 2882, 3711, 2379, 3008, 6442, 4966, 8299, 2357, 2356, 3231, 2449, 6223, 3583, 2455, 4908, 3363, 3081, 6451, 3680, 6239, 8046, 3189, 2313, 6278, 3653, 1503, 6805</textarea>
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+            <label class="text-slate-300 text-[11px] font-semibold">
+              第一階段 60 強核心池（💡 若清空文字框或不足 60 檔，系統啟動時會<b>自動保留已鎖倉持股</b>並從全市場當日最強股自動補滿 60 檔！）：
+            </label>
+            <div class="flex flex-wrap items-center gap-1.5">
+              <button type="button" onclick="autoRebalanceDynamic60('HYBRID_40_20')" class="px-2 py-1 rounded bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-200 border border-indigo-500/40 text-[11px] font-semibold transition">
+                🔄 動態換血：鎖倉股＋核心鐵衛＋全市場活水湊滿60強
+              </button>
+              <button type="button" onclick="autoRebalanceDynamic60('PURE_MARKET_60')" class="px-2 py-1 rounded bg-cyan-600/30 hover:bg-cyan-600/50 text-cyan-200 border border-cyan-500/40 text-[11px] font-semibold transition">
+                ⚡ 全市場當日最強60檔 (保留鎖倉股)
+              </button>
+              <button type="button" onclick="clearScanTextareaKeepLocked()" class="px-2 py-1 rounded bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border border-amber-500/30 text-[11px] transition">
+                🧹 清空 (僅留鎖倉股)
+              </button>
+              <button type="button" onclick="restoreDefault60Textarea()" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-[11px] transition">
+                ↺ 還原預設60強
+              </button>
+            </div>
+          </div>
+          <textarea id="customScanCodesInput" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-[11px] text-slate-200 font-mono focus:outline-none focus:border-indigo-500">2330, 2317, 2454, 2382, 3017, 3264, 3105, 3661, 6669, 2345, 4979, 3450, 8069, 2408, 1303, 2308, 3037, 3035, 3443, 6285, 2368, 2383, 3324, 3533, 6187, 3131, 6488, 5274, 6515, 1519, 1513, 2603, 2881, 2882, 3711, 2379, 3008, 6442, 4966, 8299, 2357, 2356, 3231, 2449, 6223, 3583, 2455, 4908, 3363, 3081, 6451, 3680, 6239, 8046, 3189, 2313, 6278, 3653, 1503, 6805</textarea>
+          <div id="rebalanceStatusMsg" class="text-[11px] text-emerald-400 mt-1 font-mono"></div>
         </div>
       </div>
 
@@ -565,6 +625,71 @@
             🚀 立即啟動核心 60 強【三表完全體深掃】
           </button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: 新增 / 編輯鎖倉持股槽位 (Slot Position Editor) -->
+  <div id="slotEditorModal" class="fixed inset-0 z-50 hidden bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="glass-card rounded-2xl max-w-lg w-full p-6 border border-amber-500/40 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-base font-bold text-white flex items-center gap-2">
+          <i data-lucide="pin" class="w-5 h-5 text-amber-400"></i>
+          <span>📌 鎖定存入持倉槽位 (支援 Slot 1~5 標準槽 ＋ Slot 6 Free-Roll 彈性槽)</span>
+        </h3>
+        <button onclick="toggleModal('slotEditorModal')" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div class="space-y-3 text-xs text-slate-300">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-400 mb-1">選擇槽位 (Slot 1 ~ 6)</label>
+            <select id="slotInputIdx" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-bold">
+              <option value="1">Slot 1 (標準主槽位 1)</option>
+              <option value="2">Slot 2 (標準主槽位 2)</option>
+              <option value="3">Slot 3 (標準主槽位 3)</option>
+              <option value="4">Slot 4 (標準主槽位 4)</option>
+              <option value="5">Slot 5 (標準主槽位 5)</option>
+              <option value="6">🔥 Slot 6 (Free-Roll 零風險保本彈性第6槽)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1">股票代號 (如 2330, 3017)</label>
+            <input id="slotInputStockId" type="text" placeholder="輸入 4 碼代號" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-bold font-mono">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-400 mb-1">實際買進成本價 (元)</label>
+            <input id="slotInputEntryPrice" type="number" step="0.05" placeholder="例如 685" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-amber-300 font-bold font-mono">
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1">買進日期 (計算持有天數/5日滯漲)</label>
+            <input id="slotInputEntryDate" type="date" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-mono">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-400 mb-1">進場時核定檔位 (用於檢驗例外B升級)</label>
+            <select id="slotInputEntryTier" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
+              <option value="1">第一檔【滿倉出擊 100%/70%】</option>
+              <option value="2">第二檔【標準半倉 50%/35%】</option>
+              <option value="3">第三檔【試單底倉 30%/25%】(左側/收斂試單)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1">目前投入倉位比例 (%)</label>
+            <input id="slotInputAllocPct" type="number" step="5" value="100" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-cyan-300 font-bold font-mono">
+          </div>
+        </div>
+        <p class="text-[11px] text-slate-400 bg-slate-900 p-2.5 rounded-lg border border-slate-800">
+          💡 鎖入槽位後，該股將獲得<b>「動態 60 強換血免死金牌」</b>（永遠保留於第一階段三表深掃名單），且系統每日會自動比對最新 TOP 5 強勢股，若該槽位觸發<b>「例外A (買進滿5日漲幅卡在 -3%~+2% 滯漲)」</b>或<b>「例外B (原本是第三檔試單底倉，而今日有第一檔滿倉 S/A 級新主升股)」</b>，將自動跳出<b>「一鍵換馬升級」</b>按鈕！
+        </p>
+      </div>
+      <div class="flex justify-end gap-2 pt-3 border-t border-slate-800">
+        <button onclick="toggleModal('slotEditorModal')" class="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 text-xs">取消</button>
+        <button onclick="saveSlotFromModal()" class="px-5 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold">📌 確認鎖入槽位</button>
       </div>
     </div>
   </div>
@@ -1623,8 +1748,23 @@ async function startTwoStageMarketScan() {
 
     const marketQualifiedList = await fetchAllQualifiedMarketStocks(minTurnoverYi, minVolLots, minHighPriceLots, token, subLog);
 
-    const stageASet = new Set(seedCodes.slice(0, 60));
+    // 1. 強制優先保送所有「已鎖倉持股 (Slot 1 ~ Slot 6)」，確保實戰持倉股 100% 獲得三表深掃！
+    const lockedIds = getLockedStockIds();
+    const stageASet = new Set(lockedIds);
+
+    // 2. 加入文字框內指定的股票代號
+    seedCodes.forEach(code => {
+      if (stageASet.size < 60) stageASet.add(code);
+    });
+
+    // 3. 若文字框被清空、或只填了少數幾檔 (< 60 檔)，自動從全市場最新雙軌合格強勢股補滿 60 檔！
+    for (const item of marketQualifiedList) {
+      if (stageASet.size >= 60) break;
+      stageASet.add(item.id);
+    }
     const stageACodes = Array.from(stageASet);
+    // 同步將最終拍板的 60 強代號寫回文字框，讓使用者清楚看到最新動態 60 強名單
+    document.getElementById('customScanCodesInput').value = stageACodes.join(', ');
 
     const stageBCodes = [];
     if (autoContinueStageB) {
@@ -1992,6 +2132,7 @@ function recalculateAll() {
     state.selectedStockId = state.top10Stocks[0]?.id || state.stocksData[0]?.id || null;
   }
 
+  renderLockedSlotsSection();
   renderTop5BacktestSummary();
   renderTop10Section();
   renderSummaryTable();
@@ -2085,9 +2226,12 @@ function renderTop10Section() {
             <span class="text-sm font-bold ${s.chgPct >= 0 ? 'text-rose-400' : 'text-emerald-400'}">${s.close.toFixed(2)} (${s.chgPct >= 0 ? '+' : ''}${s.chgPct.toFixed(2)}%)</span>
             <span class="text-[10px] text-cyan-300 font-mono bg-slate-950/80 px-1.5 py-0.5 rounded border border-slate-800">資料日: ${s.latestBarDate}</span>
           </div>
-          <div class="flex items-center gap-1.5">
+          <div class="flex flex-wrap items-center gap-1.5">
             <span class="px-2 py-0.5 rounded text-[11px] font-semibold ${s.isCategoryB ? 'bg-cyan-500/20 text-cyan-300' : 'bg-purple-500/20 text-purple-300'}">${s.categoryName}</span>
             <span class="px-2.5 py-0.5 rounded border text-xs font-bold ${s.tierBadgeClass}">${s.tierName} ${s.finalAllocPct}% (${s.finalCapitalWan}萬)</span>
+            <button onclick="event.stopPropagation(); quickLockStockToSlot('${s.id}')" class="px-2 py-0.5 rounded bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/40 text-[11px] font-bold transition" title="將此股鎖入實戰持倉槽位">
+              📌 鎖入槽位
+            </button>
           </div>
         </div>
 
@@ -2546,7 +2690,491 @@ function saveSettings() {
   toggleModal('settingsModal');
 }
 
+
+// ============================================================================
+// 8. 💼 5+1 實戰持倉槽位管理 × 例外A(5日滯漲)/例外B(試單升級滿倉)換股決策 × 動態60強換血
+// ============================================================================
+const DEFAULT_60_CODES_STR = "2330, 2317, 2454, 2382, 3017, 3264, 3105, 3661, 6669, 2345, 4979, 3450, 8069, 2408, 1303, 2308, 3037, 3035, 3443, 6285, 2368, 2383, 3324, 3533, 6187, 3131, 6488, 5274, 6515, 1519, 1513, 2603, 2881, 2882, 3711, 2379, 3008, 6442, 4966, 8299, 2357, 2356, 3231, 2449, 6223, 3583, 2455, 4908, 3363, 3081, 6451, 3680, 6239, 8046, 3189, 2313, 6278, 3653, 1503, 6805";
+const CORE_40_IRON_GUARD = [
+  '2330','2317','2454','2308','2382','6669','5274','3661','3008','3017',
+  '3324','3653','3533','2345','2383','2368','3131','6187','6515','6223',
+  '3264','3105','3443','3035','4966','8299','3711','2357','3231','2449',
+  '3450','4979','6442','6805','3583','3680','1519','8069','2603','2881'
+];
+
+// 讀取或初始化 6 個槽位 (Slot 1~5 標準槽, Slot 6 Free-Roll 彈性槽)
+function loadLockedSlots() {
+  try {
+    const raw = localStorage.getItem('gem_v65_locked_slots_v1');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object') return parsed;
+    }
+  } catch (_) {}
+  // 預設示範 3 個實戰槽位 (讓使用者打開就能看到「主升續抱鎖倉」、「例外B 第三檔試單升級提醒」與「Free-Roll 解鎖進度」)
+  return {
+    1: { slotIdx: 1, id: '2330', name: '台積電', entryPrice: 985.0, entryDate: '2026-10-05', entryTier: 1, allocPct: 100 },
+    2: { slotIdx: 2, id: '5274', name: '信驊', entryPrice: 4120.0, entryDate: '2026-10-06', entryTier: 1, allocPct: 100 },
+    3: { slotIdx: 3, id: '3105', name: '穩懋', entryPrice: 152.5, entryDate: '2026-10-16', entryTier: 3, allocPct: 30 }
+  };
+}
+
+function saveLockedSlots(slotsObj) {
+  state.lockedSlots = slotsObj;
+  try {
+    localStorage.setItem('gem_v65_locked_slots_v1', JSON.stringify(slotsObj));
+  } catch (_) {}
+}
+
+function getLockedStockIds() {
+  const slots = state.lockedSlots || {};
+  return Object.values(slots).filter(x => x && x.id).map(x => String(x.id).trim());
+}
+
+function calcTradingDaysBetween(dateStr1, dateStr2, stockHistory) {
+  if (!dateStr1) return 1;
+  if (Array.isArray(stockHistory) && stockHistory.length > 0) {
+    const count = stockHistory.filter(h => h.date > dateStr1 && h.date <= (dateStr2 || '9999-12-31')).length;
+    if (count > 0) return count;
+  }
+  const d1 = new Date(dateStr1);
+  const d2 = dateStr2 ? new Date(dateStr2) : new Date();
+  const diffDays = Math.max(1, Math.round((d2 - d1) / (1000 * 60 * 60 * 24)));
+  return Math.max(1, Math.round(diffDays * (5 / 7)));
+}
+
+// 找出今日 TOP 5 中「尚未被鎖入槽位」的最強新進候選股
+function getBestUnlockedTopCandidate() {
+  const lockedSet = new Set(getLockedStockIds());
+  const candidates = (state.top10Stocks || []).filter(s => !lockedSet.has(s.id) && s.finalTier <= 2 && s.mpsScore >= 80);
+  return candidates[0] || (state.top5Stocks || []).find(s => !lockedSet.has(s.id)) || null;
+}
+
+// 診斷單一槽位狀態：續抱鎖倉 vs 出場訊號 vs 例外A(5日滯漲) vs 例外B(第三檔試單升級第一檔滿倉)
+function diagnoseSlotPosition(slotItem, bestNewCandidate) {
+  const s = state.stocksData.find(x => x.id === slotItem.id);
+  const currPrice = s ? s.close : slotItem.entryPrice;
+  const latestDate = s ? s.latestBarDate : state.marketDataLatestDate;
+  const holdDays = calcTradingDaysBetween(slotItem.entryDate, latestDate, s?.history);
+  const profitPct = slotItem.entryPrice > 0 ? ((currPrice - slotItem.entryPrice) / slotItem.entryPrice) * 100 : 0;
+  const pnlWan = ((state.baseCapital * (slotItem.allocPct / 100)) * (profitPct / 100));
+
+  const atr14Pct = s ? s.atr14Pct : 3.5;
+  const initStopPct = Math.max(8.0, 1.5 * atr14Pct);
+  const initStopPrice = slotItem.entryPrice * (1 - initStopPct / 100);
+  const trailLinePrice = s ? (s.isCategoryB ? s.sma10 : s.sma20) : slotItem.entryPrice * 0.95;
+  const trailLineName = s ? (s.isCategoryB ? `SMA10 (${s.sma10.toFixed(2)})` : `SMA20 (${s.sma20.toFixed(2)})`) : '移動停利線';
+
+  // Free-Roll 零本金風險判定：帳面浮盈 >= +10% 或 移動停利線已高於買進成本價
+  const isFreeRollLocked = (profitPct >= 10.0) || (trailLinePrice >= slotItem.entryPrice && profitPct >= 5.0);
+
+  // 1. 檢驗是否觸發出場訊號 (跌破 Initial Stop 或 跌破 SMA10/SMA20 移動停利線 或 觸發硬否決)
+  const brokeInitStop = currPrice <= initStopPrice;
+  const brokeTrailStop = s && holdDays >= 2 && (currPrice < trailLinePrice);
+  const triggeredVeto = s && s.hardVetoTriggered;
+
+  if (brokeInitStop || brokeTrailStop || triggeredVeto) {
+    const exitWhy = brokeInitStop
+      ? `跌破初始停損價 ${initStopPrice.toFixed(2)} (-${initStopPct.toFixed(1)}%)`
+      : triggeredVeto
+      ? `觸發硬否決濾網 (${s.vetoReasons.join(',')})`
+      : `收盤 (${currPrice.toFixed(2)}) 跌破移動停利線 ${trailLineName}`;
+    return {
+      statusCode: 'EXIT_NOW',
+      badgeText: '🚨 觸發出場訊號！立即結清換馬',
+      badgeClass: 'bg-rose-500/20 text-rose-300 border-rose-500/50',
+      adviceHtml: `<span class="text-rose-300 font-bold">出場原因：${exitWhy}。</span>${bestNewCandidate ? `建議結清釋出槽位，立即遞補買入今日最強未持倉股 <b>[${bestNewCandidate.id} ${bestNewCandidate.name}] (${bestNewCandidate.tierName})</b>！` : ''}`,
+      canSwap: !!bestNewCandidate,
+      swapType: 'EXIT_REPLACE',
+      currPrice, holdDays, profitPct, pnlWan, initStopPrice, trailLineName, isFreeRollLocked, stockObj: s
+    };
+  }
+
+  // 2. 檢驗【例外 B：第三檔試單底倉 ➔ 升級換入第一檔滿倉主升股】
+  // 條件：本槽位當初進場為「第三檔試單底倉 (entryTier === 3 或 allocPct <= 35%)」且目前浮盈 < +6% 尚未進入主升噴發，而外部有第一檔【滿倉出擊】(finalTier === 1 或 MPS >= 80 S/A級) 的新強勢股！
+  const isTier3Trial = (Number(slotItem.entryTier) === 3 || Number(slotItem.allocPct) <= 35);
+  const hasTier1Candidate = bestNewCandidate && (bestNewCandidate.finalTier === 1 || bestNewCandidate.mpsScore >= 84);
+  if (isTier3Trial && profitPct < 6.0 && hasTier1Candidate) {
+    return {
+      statusCode: 'SWAP_EXCEPTION_B',
+      badgeText: '⚡ 例外B提醒：試單底倉可升級滿倉主升股',
+      badgeClass: 'bg-amber-500/25 text-amber-200 border-amber-400/60',
+      adviceHtml: `本槽位為<b>第三檔試單底倉 (${slotItem.allocPct}%)</b> 且目前浮盈僅 <b>${profitPct >= 0 ? '+' : ''}${profitPct.toFixed(2)}%</b>；今日出現高確定性<b>第一檔滿倉主升股 [${bestNewCandidate.id} ${bestNewCandidate.name}] (MPS ${bestNewCandidate.mpsScore}分 ${bestNewCandidate.mpsRank})</b>，可選擇執行「例外B 升級換股」！`,
+      canSwap: true,
+      swapType: 'EXCEPTION_B_UPGRADE',
+      currPrice, holdDays, profitPct, pnlWan, initStopPrice, trailLineName, isFreeRollLocked, stockObj: s
+    };
+  }
+
+  // 3. 檢驗【例外 A：買進滿 5 個交易日不發動之時間停損 (5-Day Time-Stop Swap)】
+  // 條件：持有天數 >= 5 天，且帳面損益卡在 -4.0% ~ +2.5% 牛皮整理，且外部有新強勢股
+  if (holdDays >= 5 && profitPct >= -4.5 && profitPct <= 2.5 && bestNewCandidate) {
+    return {
+      statusCode: 'SWAP_EXCEPTION_A',
+      badgeText: `⏳ 例外A提醒：滿 ${holdDays} 日滯漲 (時間停損)`,
+      badgeClass: 'bg-amber-500/20 text-amber-300 border-amber-500/40',
+      adviceHtml: `已持有 <b>${holdDays} 個交易日</b>但帳面僅 <b>${profitPct >= 0 ? '+' : ''}${profitPct.toFixed(2)}%</b>（點火失敗變成死錢）；建議執行「例外A 時間停損」，汰換為今日新點火強勢股 <b>[${bestNewCandidate.id} ${bestNewCandidate.name}] (MPS ${bestNewCandidate.mpsScore}分)</b>！`,
+      canSwap: true,
+      swapType: 'EXCEPTION_A_TIMESTOP',
+      currPrice, holdDays, profitPct, pnlWan, initStopPrice, trailLineName, isFreeRollLocked, stockObj: s
+    };
+  }
+
+  // 4. 正常主升續抱鎖倉中 (嚴禁換股！)
+  return {
+    statusCode: 'HOLD_STRONG',
+    badgeText: isFreeRollLocked ? '🛡️ 零風險鎖利續抱中 (Free-Roll 已達成)' : '🟢 主升續抱鎖倉中 (嚴禁換股)',
+    badgeClass: isFreeRollLocked ? 'bg-indigo-500/25 text-indigo-200 border-indigo-400/50' : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40',
+    adviceHtml: `股價 (${currPrice.toFixed(2)}) 穩守移動停利線 <b>${trailLineName}</b> 之上，即使當日未排進前五名，<b>嚴禁賣出換股</b>，請讓獲利奔跑直到跌破停利線！`,
+    canSwap: false,
+    swapType: null,
+    currPrice, holdDays, profitPct, pnlWan, initStopPrice, trailLineName, isFreeRollLocked, stockObj: s
+  };
+}
+
+function renderLockedSlotsSection() {
+  if (!state.lockedSlots) state.lockedSlots = loadLockedSlots();
+  const slots = state.lockedSlots;
+  const bestNewCandidate = getBestUnlockedTopCandidate();
+
+  let activeStdCount = 0;
+  let freeRollCount = 0;
+  let exceptionBList = [];
+  let exceptionAList = [];
+  let exitList = [];
+
+  const diagMap = {};
+  for (let i = 1; i <= 6; i++) {
+    if (slots[i] && slots[i].id) {
+      if (i <= 5) activeStdCount++;
+      const d = diagnoseSlotPosition(slots[i], bestNewCandidate);
+      diagMap[i] = d;
+      if (d.isFreeRollLocked) freeRollCount++;
+      if (d.statusCode === 'SWAP_EXCEPTION_B') exceptionBList.push({ slotIdx: i, slot: slots[i], diag: d });
+      if (d.statusCode === 'SWAP_EXCEPTION_A') exceptionAList.push({ slotIdx: i, slot: slots[i], diag: d });
+      if (d.statusCode === 'EXIT_NOW') exitList.push({ slotIdx: i, slot: slots[i], diag: d });
+    }
+  }
+
+  const slot6Unlocked = (freeRollCount >= 2) || (slots[6] && slots[6].id);
+  document.getElementById('slotSummaryBadge').textContent = `標準槽已鎖倉 ${activeStdCount} / 5 檔` + (slots[6]?.id ? ` ＋ 第6槽已啟用` : '');
+  const frBadge = document.getElementById('freeRollStatusBadge');
+  if (freeRollCount >= 2) {
+    frBadge.className = 'px-2.5 py-0.5 text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 rounded-full';
+    frBadge.textContent = `🔓 Free-Roll 條件已達成 (${freeRollCount} 檔鎖死獲利 ≥+10%)：准許開啟【第 6 彈性槽位】！`;
+  } else {
+    frBadge.className = 'px-2.5 py-0.5 text-[11px] font-semibold bg-slate-800 text-slate-400 border border-slate-700 rounded-full';
+    frBadge.textContent = `🔒 第 6 彈性槽位進度：目前 ${freeRollCount} / 2 檔達成零風險鎖利 (需 ≥2 檔浮盈 ≥+10% 或停利線過成本)`;
+  }
+
+  // 渲染全域換股決策顧問橫幅 (當有新 TOP 5 強勢股，告知該等出場、還是可執行例外 A / 例外 B / 第 6 槽加開)
+  const banner = document.getElementById('globalSwapAdvisorBanner');
+  if (bestNewCandidate && activeStdCount > 0) {
+    banner.classList.remove('hidden');
+    let actionMsg = '';
+    if (exitList.length > 0) {
+      const ex = exitList[0];
+      actionMsg = `🚨 <b>優先動作（汰弱換強）</b>：您的 <b>Slot ${ex.slotIdx} [${ex.slot.id} ${ex.slot.name}]</b> 已觸發出場訊號！請結清該檔，並將資金買入今日新進強勢股 <b>[${bestNewCandidate.id} ${bestNewCandidate.name}]</b>。`;
+    } else if (exceptionBList.length > 0) {
+      const eb = exceptionBList[0];
+      actionMsg = `⚡ <b>觸發【例外 B：第三檔試單底倉 ➔ 升級第一檔滿倉主升股】提醒</b>：您的 <b>Slot ${eb.slotIdx} [${eb.slot.id} ${eb.slot.name}]</b> 原為第三檔試單底倉 (${eb.slot.allocPct}%)，而今日新進 <b>[${bestNewCandidate.id} ${bestNewCandidate.name}] (MPS ${bestNewCandidate.mpsScore}分 ${bestNewCandidate.mpsRank})</b> 為高確定性主升股，您可點擊下方卡片「⚡ 一鍵升級換入此股」！`;
+    } else if (exceptionAList.length > 0) {
+      const ea = exceptionAList[0];
+      actionMsg = `⏳ <b>觸發【例外 A：5日滯漲時間停損】提醒</b>：您的 <b>Slot ${ea.slotIdx} [${ea.slot.id} ${ea.slot.name}]</b> 買進已滿 ${ea.diag.holdDays} 日仍滯漲 (${ea.diag.profitPct.toFixed(1)}%)，建議點擊下方卡片「🔄 汰換為 [${bestNewCandidate.id} ${bestNewCandidate.name}]」！`;
+    } else if (activeStdCount < 5) {
+      actionMsg = `🟢 <b>尚有空餘標準槽位 (${5 - activeStdCount} 格)</b>：現有持股全數健康續抱鎖倉中，可直接動用空槽位買入今日新強勢股 <b>[${bestNewCandidate.id} ${bestNewCandidate.name}]</b>。`;
+    } else if (freeRollCount >= 2 && (!slots[6] || !slots[6].id)) {
+      actionMsg = `🔥 <b>5 槽全滿且皆為主升健康鎖倉（嚴禁砍強勢股！）</b>：但因您已有 <b>${freeRollCount} 檔持股達成零風險鎖利 (Free-Roll)</b>，可點擊右方第 6 槽位直接開啟<b>【Slot 6 零風險彈性加碼槽】</b>買入 <b>[${bestNewCandidate.id} ${bestNewCandidate.name}]</b>！`;
+    } else {
+      actionMsg = `🛡️ <b>5 槽全滿且皆正常主升續抱中（按兵不動鐵律）</b>：今日雖有新強勢股 <b>[${bestNewCandidate.id} ${bestNewCandidate.name}]</b> 進入 TOP 5，但您手中 5 檔皆守穩停利線且無滯漲/試單降級，<b>請勿換股，耐心等現有持股觸發出場訊號後再買入</b>！`;
+    }
+    banner.innerHTML = `<div class="flex items-start gap-2"><i data-lucide="sparkles" class="w-4 h-4 text-amber-400 shrink-0 mt-0.5"></i><div>${actionMsg}</div></div>`;
+  } else {
+    banner.classList.add('hidden');
+  }
+
+  // 渲染 6 張槽位卡片
+  const grid = document.getElementById('lockedSlotsGrid');
+  let cardsHtml = '';
+  for (let i = 1; i <= 6; i++) {
+    const item = slots[i];
+    const isSlot6 = (i === 6);
+
+    if (!item || !item.id) {
+      // 空槽位卡片
+      const canQuickFill = bestNewCandidate && (!isSlot6 || slot6Unlocked);
+      cardsHtml += `
+        <div class="rounded-xl p-4 border border-dashed ${isSlot6 ? (slot6Unlocked ? 'border-emerald-500/50 bg-emerald-950/15' : 'border-slate-800 bg-slate-950/40 opacity-75') : 'border-slate-700 bg-slate-900/40'} flex flex-col justify-between min-h-[170px]">
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold ${isSlot6 ? 'text-amber-300' : 'text-slate-300'}">
+                ${isSlot6 ? '🔥 Slot 6【Free-Roll 零風險彈性槽】' : `Slot ${i}【標準持倉槽位 ${i}】`}
+              </span>
+              <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400">空槽位待命</span>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-2">
+              ${isSlot6
+                ? (slot6Unlocked
+                    ? `✅ 您已有 ${freeRollCount} 檔持股鎖死獲利 (≥+10%)，零風險保本加碼槽位已解鎖！可將今日新進 TOP 5 強勢股鎖入此第 6 槽。`
+                    : `🔒 當 Slot 1~5 中有 ≥2 檔浮盈達 +10% (或停利線高於成本) 時自動解鎖，或是您將某檔大賺股獲利調節一半後，可開啟此第 6 槽買入新飆股。`)
+                : `目前無鎖倉持股。可從下方 TOP 10 點擊「📌 鎖入槽位」，或直接帶入今日最強未持倉標的。`
+              }
+            </p>
+          </div>
+          <div class="flex items-center gap-2 mt-3 pt-2 border-t border-slate-800/80">
+            ${canQuickFill
+              ? `<button onclick="quickFillSlotWithCandidate(${i}, '${bestNewCandidate.id}')" class="flex-1 py-1.5 px-2.5 rounded-lg bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-200 border border-indigo-500/40 text-xs font-bold transition">
+                  ⚡ 直接帶入今日最強 [${bestNewCandidate.id} ${bestNewCandidate.name}]
+                </button>`
+              : ''
+            }
+            <button onclick="openAddSlotModal(${i})" class="py-1.5 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs border border-slate-700 transition">
+              + 手動填入
+            </button>
+          </div>
+        </div>
+      `;
+    } else {
+      // 已鎖倉股票卡片
+      const d = diagMap[i];
+      const pColor = d.profitPct >= 0 ? 'text-emerald-400' : 'text-rose-400';
+      const tierLabel = Number(item.entryTier) === 1 ? '第一檔滿倉' : Number(item.entryTier) === 2 ? '第二檔半倉' : '第三檔試單底倉';
+
+      cardsHtml += `
+        <div onclick="selectStock('${item.id}')" class="cursor-pointer rounded-xl p-4 border ${d.statusCode === 'EXIT_NOW' ? 'border-rose-500/60 bg-rose-950/20' : d.canSwap ? 'border-amber-500/60 bg-amber-950/15' : 'border-slate-700 bg-slate-900/90'} flex flex-col justify-between transition hover:border-indigo-400">
+          <div>
+            <div class="flex flex-wrap items-center justify-between gap-1 border-b border-slate-800 pb-2 mb-2">
+              <div class="flex items-center gap-1.5">
+                <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold text-[11px]">${isSlot6 ? '🔥 Slot 6' : `Slot ${i}`}</span>
+                <span class="text-sm font-extrabold text-white">${item.id} ${item.name}</span>
+                <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">${tierLabel} (${item.allocPct}%)</span>
+              </div>
+              <div class="flex items-center gap-1" onclick="event.stopPropagation()">
+                <button onclick="openAddSlotModal(${i})" class="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px]" title="編輯成本/日期">編輯</button>
+                <button onclick="removeLockedSlot(${i})" class="px-1.5 py-0.5 rounded bg-rose-500/20 hover:bg-rose-500/40 text-rose-300 text-[10px]" title="結清釋出槽位">釋出×</button>
+              </div>
+            </div>
+
+            <!-- Status Pill -->
+            <div class="mb-2">
+              <span class="inline-block px-2.5 py-0.5 rounded-full border text-[11px] font-bold ${d.badgeClass}">
+                ${d.badgeText}
+              </span>
+            </div>
+
+            <!-- Price & PnL Grid -->
+            <div class="grid grid-cols-4 gap-1.5 text-[11px] bg-slate-950/80 p-2 rounded-lg border border-slate-800/80 mb-2">
+              <div>
+                <span class="text-slate-400 block">買進成本</span>
+                <strong class="text-white font-mono">${item.entryPrice.toFixed(2)}</strong>
+              </div>
+              <div>
+                <span class="text-slate-400 block">最新現價</span>
+                <strong class="text-cyan-300 font-mono">${d.currPrice.toFixed(2)}</strong>
+              </div>
+              <div>
+                <span class="text-slate-400 block">帳面損益</span>
+                <strong class="${pColor} font-mono">${d.profitPct >= 0 ? '+' : ''}${d.profitPct.toFixed(2)}% (${d.pnlWan >= 0 ? '+' : ''}${d.pnlWan.toFixed(1)}萬)</strong>
+              </div>
+              <div>
+                <span class="text-slate-400 block">持有天數</span>
+                <strong class="text-amber-300 font-mono">${d.holdDays} 交易日</strong>
+              </div>
+            </div>
+
+            <div class="text-[11px] text-slate-300 leading-relaxed">
+              ${d.adviceHtml}
+            </div>
+          </div>
+
+          <!-- Swap Action Button if Exception A / Exception B / Exit triggered -->
+          ${d.canSwap && bestNewCandidate
+            ? `<div class="mt-3 pt-2 border-t border-slate-800/80" onclick="event.stopPropagation()">
+                <button onclick="executeSlotSwap(${i}, '${bestNewCandidate.id}')" class="w-full py-1.5 px-3 rounded-lg ${d.statusCode === 'SWAP_EXCEPTION_B' ? 'bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white' : 'bg-rose-600/80 hover:bg-rose-500 text-white'} text-xs font-bold shadow transition flex items-center justify-center gap-1.5">
+                  <span>${d.statusCode === 'SWAP_EXCEPTION_B' ? `⚡ 執行例外B升級：換入第一檔滿倉 [${bestNewCandidate.id} ${bestNewCandidate.name}]` : `🔄 執行換馬：結清並買入 [${bestNewCandidate.id} ${bestNewCandidate.name}]`}</span>
+                </button>
+              </div>`
+            : ''
+          }
+        </div>
+      `;
+    }
+  }
+  grid.innerHTML = cardsHtml;
+}
+
+function openAddSlotModal(slotIdx = 1, prefillStockId = '') {
+  if (!state.lockedSlots) state.lockedSlots = loadLockedSlots();
+  const existing = state.lockedSlots[slotIdx];
+  document.getElementById('slotInputIdx').value = String(slotIdx);
+
+  const sid = prefillStockId || existing?.id || state.selectedStockId || '2330';
+  const sObj = state.stocksData.find(x => x.id === sid);
+  document.getElementById('slotInputStockId').value = sid;
+  document.getElementById('slotInputEntryPrice').value = existing?.entryPrice || (sObj ? sObj.close : 100);
+  document.getElementById('slotInputEntryDate').value = existing?.entryDate || (state.marketDataLatestDate || new Date().toISOString().slice(0, 10));
+  document.getElementById('slotInputEntryTier').value = String(existing?.entryTier || (sObj && sObj.finalTier <= 3 ? sObj.finalTier : 1));
+  document.getElementById('slotInputAllocPct').value = existing?.allocPct || (sObj && sObj.finalAllocPct > 0 ? sObj.finalAllocPct : 100);
+
+  document.getElementById('slotEditorModal').classList.remove('hidden');
+}
+
+function saveSlotFromModal() {
+  const idx = parseInt(document.getElementById('slotInputIdx').value, 10) || 1;
+  const sid = document.getElementById('slotInputStockId').value.trim().toUpperCase();
+  if (!sid) return;
+  const sObj = state.stocksData.find(x => x.id === sid);
+  const name = sObj?.name || STOCK_NAME_MAP[sid] || `台股 ${sid}`;
+  const entryPrice = parseFloat(document.getElementById('slotInputEntryPrice').value) || (sObj ? sObj.close : 100);
+  const entryDate = document.getElementById('slotInputEntryDate').value || (state.marketDataLatestDate || new Date().toISOString().slice(0, 10));
+  const entryTier = parseInt(document.getElementById('slotInputEntryTier').value, 10) || 1;
+  const allocPct = parseFloat(document.getElementById('slotInputAllocPct').value) || 100;
+
+  if (!state.lockedSlots) state.lockedSlots = loadLockedSlots();
+  state.lockedSlots[idx] = { slotIdx: idx, id: sid, name, entryPrice, entryDate, entryTier, allocPct };
+  saveLockedSlots(state.lockedSlots);
+  ensureLockedStocksInTextarea();
+  document.getElementById('slotEditorModal').classList.add('hidden');
+  recalculateAll();
+}
+
+function quickLockStockToSlot(sid) {
+  if (!state.lockedSlots) state.lockedSlots = loadLockedSlots();
+  // 檢查是否已經在某個槽位中
+  for (let i = 1; i <= 6; i++) {
+    if (state.lockedSlots[i]?.id === sid) {
+      openAddSlotModal(i, sid);
+      return;
+    }
+  }
+  // 找第一個空的槽位 (1~5 優先，若滿則選 6)
+  let targetSlot = 6;
+  for (let i = 1; i <= 5; i++) {
+    if (!state.lockedSlots[i] || !state.lockedSlots[i].id) {
+      targetSlot = i;
+      break;
+    }
+  }
+  openAddSlotModal(targetSlot, sid);
+}
+
+function quickFillSlotWithCandidate(slotIdx, sid) {
+  const sObj = state.stocksData.find(x => x.id === sid);
+  if (!sObj) {
+    openAddSlotModal(slotIdx, sid);
+    return;
+  }
+  if (!state.lockedSlots) state.lockedSlots = loadLockedSlots();
+  state.lockedSlots[slotIdx] = {
+    slotIdx,
+    id: sObj.id,
+    name: sObj.name,
+    entryPrice: sObj.close,
+    entryDate: sObj.latestBarDate || state.marketDataLatestDate || new Date().toISOString().slice(0, 10),
+    entryTier: sObj.finalTier <= 3 ? sObj.finalTier : 1,
+    allocPct: sObj.finalAllocPct > 0 ? sObj.finalAllocPct : (sObj.isCategoryB ? 100 : 70)
+  };
+  saveLockedSlots(state.lockedSlots);
+  ensureLockedStocksInTextarea();
+  recalculateAll();
+}
+
+function executeSlotSwap(slotIdx, newStockId) {
+  const oldItem = state.lockedSlots?.[slotIdx];
+  const newObj = state.stocksData.find(x => x.id === newStockId);
+  if (!newObj) return;
+  const confirmMsg = `確定執行【槽位 Slot ${slotIdx} 換股升級】？\n\n• 賣出結清：${oldItem ? `${oldItem.id} ${oldItem.name}` : '原持股'}\n• 買入鎖倉：${newObj.id} ${newObj.name} (現價 ${newObj.close.toFixed(2)} 元，${newObj.tierName} ${newObj.finalAllocPct}%)`;
+  if (!confirm(confirmMsg)) return;
+  quickFillSlotWithCandidate(slotIdx, newStockId);
+}
+
+function removeLockedSlot(slotIdx) {
+  if (!state.lockedSlots) return;
+  delete state.lockedSlots[slotIdx];
+  saveLockedSlots(state.lockedSlots);
+  recalculateAll();
+}
+
+function clearAllLockedSlots() {
+  if (!confirm('確定要清空所有已鎖定的持倉槽位 (Slot 1 ~ 6) 嗎？')) return;
+  state.lockedSlots = {};
+  saveLockedSlots({});
+  recalculateAll();
+}
+
+// 確保所有已鎖倉股票永遠保留在 60 強文字框的最前面
+function ensureLockedStocksInTextarea() {
+  const lockedIds = getLockedStockIds();
+  if (!lockedIds.length) return;
+  const el = document.getElementById('customScanCodesInput');
+  if (!el) return;
+  const current = el.value.split(/[\s,，;；]+/).map(s => s.trim()).filter(Boolean);
+  const merged = new Set([...lockedIds, ...current]);
+  el.value = Array.from(merged).slice(0, 60).join(', ');
+}
+
+// 動態 60 強換血按鈕（100% 保留已鎖倉股票！）
+async function autoRebalanceDynamic60(mode = 'HYBRID_40_20') {
+  const msgEl = document.getElementById('rebalanceStatusMsg');
+  const lockedIds = getLockedStockIds();
+  if (msgEl) msgEl.textContent = `⏳ 正在從證交所/櫃買中心抓取全市場最新強勢股進行換血（已強制保護鎖倉股 ${lockedIds.length} 檔：${lockedIds.join(', ') || '無'}）...`;
+
+  const token = localStorage.getItem('gem_finmind_token') || '';
+  const minTurnoverYi = parseFloat(document.getElementById('fltTurnoverYi')?.value) || 1.5;
+  const minVolLots = parseFloat(document.getElementById('fltVolumeLots')?.value) || 1500;
+  const minHighPriceLots = parseFloat(document.getElementById('fltHighPriceLots')?.value) || 150;
+
+  try {
+    const marketList = await fetchAllQualifiedMarketStocks(minTurnoverYi, minVolLots, minHighPriceLots, token, msgEl || {});
+    const newSet = new Set(lockedIds); // 第一優先：100% 保留已鎖倉之 Slot 1~6 股票！
+
+    if (mode === 'HYBRID_40_20') {
+      // 第二優先：保留核心鐵衛股 (湊滿至 40 檔)
+      for (const cid of CORE_40_IRON_GUARD) {
+        if (newSet.size >= 40) break;
+        newSet.add(cid);
+      }
+    }
+
+    // 第三優先：從全市場當日成交金額與動能最強的合格池中補滿至 60 檔！
+    for (const item of marketList) {
+      if (newSet.size >= 60) break;
+      newSet.add(item.id);
+    }
+
+    const final60 = Array.from(newSet).slice(0, 60);
+    document.getElementById('customScanCodesInput').value = final60.join(', ');
+    if (msgEl) {
+      msgEl.textContent = `✅ 動態 60 強換血完成！已 100% 保留您的鎖倉持股 (${lockedIds.length} 檔)，並納入全市場最新高成交金額活水股，共 ${final60.length} 檔。請點擊下方按鈕啟動三表深掃！`;
+    }
+  } catch (e) {
+    if (msgEl) msgEl.textContent = `⚠️ 換血提示：${e.message}`;
+  }
+}
+
+function clearScanTextareaKeepLocked() {
+  const lockedIds = getLockedStockIds();
+  document.getElementById('customScanCodesInput').value = lockedIds.join(', ');
+  const msgEl = document.getElementById('rebalanceStatusMsg');
+  if (msgEl) {
+    msgEl.textContent = `🧹 已清空非鎖倉股（目前保留鎖倉持股 ${lockedIds.length} 檔：${lockedIds.join(', ') || '無'}）。直接按下方啟動，系統將自動從全市場當日最強股補滿剩餘 ${60 - lockedIds.length} 檔！`;
+  }
+}
+
+function restoreDefault60Textarea() {
+  const lockedIds = getLockedStockIds();
+  const defArr = DEFAULT_60_CODES_STR.split(/[\s,，;；]+/).map(s => s.trim()).filter(Boolean);
+  const merged = Array.from(new Set([...lockedIds, ...defArr])).slice(0, 60);
+  document.getElementById('customScanCodesInput').value = merged.join(', ');
+  const msgEl = document.getElementById('rebalanceStatusMsg');
+  if (msgEl) {
+    msgEl.textContent = `↺ 已還原預設核心 60 強名單（並優先保留您的鎖倉持股 ${lockedIds.length} 檔）。`;
+  }
+}
+
 window.addEventListener('DOMContentLoaded', () => {
+  state.lockedSlots = loadLockedSlots();
+  ensureLockedStocksInTextarea();
   document.getElementById('finmindTokenInput').value = localStorage.getItem('gem_finmind_token') || '';
   loadDefault60StocksDataset();
 });
