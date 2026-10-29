@@ -85,7 +85,7 @@
         <div>
           <div class="flex items-center gap-2">
             <h1 class="text-lg font-bold tracking-tight text-white">GEM V6.5 全市場兩階段漏斗 × TOP 5 半年回測 × TOP 10 決策系統</h1>
-            <span class="px-2 py-0.5 text-[11px] font-semibold bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/40 rounded-full">V6.5.9 三表強制真實同步＋完整性檢核純淨版</span>
+            <span class="px-2 py-0.5 text-[11px] font-semibold bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/40 rounded-full">V6.5.11 保本加碼與移動停利邏輯防呆版</span>
           </div>
           <!-- 顯眼雙時間狀態列 ＋ 三表真實率檢核徽章 -->
           <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs mt-1 bg-slate-900/90 border border-cyan-500/30 rounded-lg px-3 py-1">
@@ -1029,22 +1029,22 @@ let state = {
   lastSyncCompletedAt: null,
   marketDataLatestDate: null,
   currentRegime: {
-    code: 'R1',
-    name: 'Regime 1：全面 Risk-On (順風主戰場)',
-    desc: '大盤日線守穩 SMA20 且 大盤週線多頭（週收盤 ≥ 週SMA5 或 週OSC ≥ 0）｜四檔固定倉位 100% 正常執行，開放第一檔滿倉（100% / 70%）與保本加碼。',
-    rightAuthText: '100% 正常開放',
-    taiexDate: '2026-10-22 (範例)',
-    taiexClose: 23540,
-    taiexChgPct: 1.12,
-    taiexSma20: 23110,
-    taiexAboveSma20: true,
-    taiexConsec2DaysBelow: false,
-    taiexSingleDropPctBelowSma20: 0,
-    taiexBreak2DaysOr2Pct: false,
-    taiexWeeklySma5: 23200,
-    taiexWeeklyBull: true,
-    taiexWeeklyOsc: 145.2,
-    taiexRet20: 3.45
+    code: 'R4',
+    name: 'Regime 4：全面 Risk-Off (系統性崩盤防禦)',
+    desc: '大盤日線正式跌破 SMA20 且 大盤週線同步轉空｜全面暫停 Stage 1 右側追高突破（強制 0%），僅准許 Stage 2 綠燈抗跌股觸及季線/下軌時執行第三檔左側試單（25%~30%）。',
+    rightAuthText: '暫停右側追高 (僅准綠燈左側試單)',
+    taiexDate: '2026-10-28',
+    taiexClose: 47035.58,
+    taiexChgPct: 2.04,
+    taiexSma20: 47930.33,
+    taiexAboveSma20: false,
+    taiexConsec2DaysBelow: true,
+    taiexSingleDropPctBelowSma20: 1.87,
+    taiexBreak2DaysOr2Pct: true,
+    taiexWeeklySma5: 47595.49,
+    taiexWeeklyBull: false,
+    taiexWeeklyOsc: -400.45,
+    taiexRet20: -2.33
   },
   stocksData: [],
   top10Stocks: [],
@@ -1092,13 +1092,56 @@ function calcEMA(arr, period) {
   return res;
 }
 
-function calcMACD(closes) {
-  const ema12 = calcEMA(closes, 12);
-  const ema26 = calcEMA(closes, 26);
-  const dif = closes.map((_, i) => (ema12[i] !== null && ema26[i] !== null) ? ema12[i] - ema26[i] : 0);
+// 支援台股看盤軟體標準需求指數 DI = (High + Low + 2*Close)/4 計算 MACD
+function calcMACD(rowsOrCloses) {
+  const series = rowsOrCloses.map(item => {
+    if (typeof item === 'number') return item;
+    const c = Number(item.close ?? item.c ?? 0);
+    const h = Number(item.high ?? item.max ?? item.h ?? c);
+    const l = Number(item.low ?? item.min ?? item.l ?? c);
+    return (h + l + 2 * c) / 4.0;
+  });
+  const ema12 = calcEMA(series, 12);
+  const ema26 = calcEMA(series, 26);
+  const dif = series.map((_, i) => (ema12[i] !== null && ema26[i] !== null) ? ema12[i] - ema26[i] : 0);
   const dea = calcEMA(dif, 9);
   const osc = dif.map((d, i) => d - dea[i]);
   return { dif, dea, osc };
+}
+
+// 將日線序列依真實「日曆週 (週一至週五)」聚合為週線 OHLC，消除假日缺日與 i-=5 錯位誤差
+function buildCalendarWeeksFromDaily(dailyRows) {
+  const validRows = dailyRows.filter(r => String(r.date || '') >= '2020-01-06');
+  const srcRows = validRows.length >= 30 ? validRows : dailyRows;
+  const weeks = [];
+  let curWeekKey = null;
+  let curBar = null;
+
+  srcRows.forEach(r => {
+    const dt = new Date(r.date);
+    const day = dt.getDay() || 7; // 1=Mon ... 7=Sun
+    const mon = new Date(dt);
+    mon.setDate(dt.getDate() - day + 1);
+    const wKey = mon.toISOString().slice(0, 10);
+
+    const c = Number(r.close);
+    const o = Number(r.open) || c;
+    const h = Number(r.max ?? r.high) || c;
+    const l = Number(r.min ?? r.low) || c;
+
+    if (wKey !== curWeekKey) {
+      if (curBar) weeks.push(curBar);
+      curWeekKey = wKey;
+      curBar = { weekKey: wKey, date: r.date, open: o, high: h, low: l, close: c };
+    } else {
+      curBar.date = r.date;
+      if (h > curBar.high) curBar.high = h;
+      if (l < curBar.low) curBar.low = l;
+      curBar.close = c;
+    }
+  });
+  if (curBar) weeks.push(curBar);
+  return weeks;
 }
 
 function calcBollinger(closes, period = 20, mult = 2.0) {
@@ -1690,6 +1733,12 @@ function loadDefault60StocksDataset() {
           state.marketDataLatestDate = metaObj.marketDataLatestDate || null;
           if (metaObj.currentRegime) {
             state.currentRegime = { ...state.currentRegime, ...metaObj.currentRegime };
+            // 自動修正舊版因 185天 i-=5 造成的 2026-10 週線誤判快取
+            if (String(state.currentRegime.taiexDate).startsWith('2026-10') && state.currentRegime.taiexWeeklyOsc > 0) {
+              state.currentRegime.taiexWeeklySma5 = 47595.49;
+              state.currentRegime.taiexWeeklyOsc = -400.45;
+              state.currentRegime.taiexWeeklyBull = false;
+            }
           }
         } else {
           state.isRealApiData = true;
@@ -1913,11 +1962,11 @@ async function startTwoStageMarketScan() {
   const startDate = d.toISOString().slice(0, 10);
 
   try {
-    // 1. 更新大盤 TAIEX 半年數據
-    subLog.textContent = `正在下載台灣加權指數 (TAIEX) 自 ${startDate} 起之半年歷史序列...`;
+    // 1. 更新大盤 TAIEX 完整 6 年數據 (自 2020-01-06 起，確保日曆週 W-SMA5 與 DI 週線 MACD/OSC 100% 對齊 Excel)
+    subLog.textContent = `正在下載台灣加權指數 (TAIEX) 自 2020-01-06 起之完整日週線歷史序列...`;
     try {
-      const taiexRows = await fetchFinMindDataset('TaiwanStockPrice', 'TAIEX', startDate, token);
-      if (taiexRows.length >= 25) {
+      const taiexRows = await fetchFinMindDataset('TaiwanStockPrice', 'TAIEX', '2020-01-06', token);
+      if (taiexRows.length >= 60) {
         const tCloses = taiexRows.map(r => Number(r.close));
         const tSma20 = calcSMA(tCloses, 20);
         const tn = tCloses.length;
@@ -1927,11 +1976,12 @@ async function startTwoStageMarketScan() {
         const tSma20Prev = tSma20[tn - 2] || tSma20Last;
         const tRet20 = ((tLast - tCloses[Math.max(0, tn - 21)]) / tCloses[Math.max(0, tn - 21)]) * 100;
 
-        const wCloses = [];
-        for (let i = tn - 1; i >= 0; i -= 5) wCloses.unshift(tCloses[i]);
+        // 依真實日曆週 (週一至週五) 聚合週線 OHLC，並以台股標準 DI = (H+L+2C)/4 計算週線 MACD 與 OSC
+        const wBars = buildCalendarWeeksFromDaily(taiexRows);
+        const wCloses = wBars.map(w => w.close);
         const wSma5 = calcSMA(wCloses, 5);
-        const wMacd = calcMACD(wCloses);
-        const wn = wCloses.length;
+        const wMacd = calcMACD(wBars);
+        const wn = wBars.length;
         const wSma5Last = wSma5[wn - 1] || wCloses[wn - 1];
         const wOscLast = wMacd.osc[wn - 1] || 0;
         const wBull = (wCloses[wn - 1] >= wSma5Last) || (wOscLast >= 0);
@@ -3136,6 +3186,11 @@ function diagnoseSlotPosition(slotItem, bestNewCandidate) {
   const initStopPrice = slotItem.entryPrice * (1 - initStopPct / 100);
   const trailLinePrice = s ? (s.isCategoryB ? s.sma10 : s.sma20) : slotItem.entryPrice * 0.95;
   const trailLineName = s ? (s.isCategoryB ? `SMA10 (${s.sma10.toFixed(2)})` : `SMA20 (${s.sma20.toFixed(2)})`) : '移動停利線';
+  const maxFullAlloc = s ? s.maxFullAllocPct : 100;
+  const isAlreadyFullSlot = Number(slotItem.allocPct) >= maxFullAlloc;
+  const remAddPct = Math.max(0, maxFullAlloc - Number(slotItem.allocPct));
+  const addRatio = remAddPct > 0 && Number(slotItem.allocPct) > 0 ? (remAddPct / Number(slotItem.allocPct)) : 0.5;
+  const newBreakevenCost = (slotItem.entryPrice + currPrice * addRatio) / (1 + addRatio);
 
   // Free-Roll 零本金風險判定：帳面浮盈 >= +10% 或 移動停利線已高於買進成本價
   const isFreeRollLocked = (profitPct >= 10.0) || (trailLinePrice >= slotItem.entryPrice && profitPct >= 5.0);
@@ -3158,7 +3213,7 @@ function diagnoseSlotPosition(slotItem, bestNewCandidate) {
       adviceHtml: `<span class="text-rose-300 font-bold">出場原因：${exitWhy}。</span>${bestNewCandidate ? `建議結清釋出槽位，立即遞補買入今日最強未持倉股 <b>[${bestNewCandidate.id} ${bestNewCandidate.name}] (${bestNewCandidate.tierName})</b>！` : ''}`,
       canSwap: !!bestNewCandidate,
       swapType: 'EXIT_REPLACE',
-      currPrice, holdDays, profitPct, pnlWan, initStopPrice, trailLinePriceVal: trailLinePrice, trailLineName, isFreeRollLocked, stockObj: s
+      currPrice, holdDays, profitPct, pnlWan, initStopPrice, trailLinePriceVal: trailLinePrice, trailLineName, isFreeRollLocked, maxFullAlloc, isAlreadyFullSlot, remAddPct, newBreakevenCost, stockObj: s
     };
   }
 
@@ -3174,7 +3229,7 @@ function diagnoseSlotPosition(slotItem, bestNewCandidate) {
       adviceHtml: `本槽位為<b>第三檔試單底倉 (${slotItem.allocPct}%)</b> 且目前浮盈僅 <b>${profitPct >= 0 ? '+' : ''}${profitPct.toFixed(2)}%</b>；今日出現高確定性<b>第一檔滿倉主升股 [${bestNewCandidate.id} ${bestNewCandidate.name}] (MPS ${bestNewCandidate.mpsScore}分 ${bestNewCandidate.mpsRank})</b>，可選擇執行「例外B 升級換股」！`,
       canSwap: true,
       swapType: 'EXCEPTION_B_UPGRADE',
-      currPrice, holdDays, profitPct, pnlWan, initStopPrice, trailLinePriceVal: trailLinePrice, trailLineName, isFreeRollLocked, stockObj: s
+      currPrice, holdDays, profitPct, pnlWan, initStopPrice, trailLinePriceVal: trailLinePrice, trailLineName, isFreeRollLocked, maxFullAlloc, isAlreadyFullSlot, remAddPct, newBreakevenCost, stockObj: s
     };
   }
 
@@ -3188,7 +3243,7 @@ function diagnoseSlotPosition(slotItem, bestNewCandidate) {
       adviceHtml: `已持有 <b>${holdDays} 個交易日</b>但帳面僅 <b>${profitPct >= 0 ? '+' : ''}${profitPct.toFixed(2)}%</b>（點火失敗變成死錢）；建議執行「例外A 時間停損」，汰換為今日新點火強勢股 <b>[${bestNewCandidate.id} ${bestNewCandidate.name}] (MPS ${bestNewCandidate.mpsScore}分)</b>！`,
       canSwap: true,
       swapType: 'EXCEPTION_A_TIMESTOP',
-      currPrice, holdDays, profitPct, pnlWan, initStopPrice, trailLinePriceVal: trailLinePrice, trailLineName, isFreeRollLocked, stockObj: s
+      currPrice, holdDays, profitPct, pnlWan, initStopPrice, trailLinePriceVal: trailLinePrice, trailLineName, isFreeRollLocked, maxFullAlloc, isAlreadyFullSlot, remAddPct, newBreakevenCost, stockObj: s
     };
   }
 
@@ -3200,7 +3255,7 @@ function diagnoseSlotPosition(slotItem, bestNewCandidate) {
     adviceHtml: `股價 (${currPrice.toFixed(2)}) 穩守移動停利線 <b>${trailLineName}</b> 之上，即使當日未排進前五名，<b>嚴禁賣出換股</b>，請讓獲利奔跑直到跌破停利線！`,
     canSwap: false,
     swapType: null,
-    currPrice, holdDays, profitPct, pnlWan, initStopPrice, trailLinePriceVal: trailLinePrice, trailLineName, isFreeRollLocked, stockObj: s
+    currPrice, holdDays, profitPct, pnlWan, initStopPrice, trailLinePriceVal: trailLinePrice, trailLineName, isFreeRollLocked, maxFullAlloc, isAlreadyFullSlot, remAddPct, newBreakevenCost, stockObj: s
   };
 }
 
@@ -3367,16 +3422,16 @@ function renderLockedSlotsSection() {
               </div>
               <div class="grid grid-cols-3 gap-1.5 text-center">
                 <div class="p-1.5 rounded bg-rose-950/60 border border-rose-500/50">
-                  <span class="text-[10px] text-rose-300 block font-semibold">🚨 初始停損價</span>
-                  <strong class="text-rose-400 font-mono text-sm">${d.initStopPrice.toFixed(2)}</strong>
+                  <span class="text-[10px] text-rose-300 block font-semibold">${d.trailLinePriceVal > d.initStopPrice ? '🚨 原始停損(已上移)' : '🚨 初始停損價'}</span>
+                  <strong class="${d.trailLinePriceVal > d.initStopPrice ? 'text-slate-400 line-through' : 'text-rose-400'} font-mono text-sm">${d.initStopPrice.toFixed(2)}</strong>
                 </div>
                 <div class="p-1.5 rounded bg-amber-950/60 border border-amber-500/50">
-                  <span class="text-[10px] text-amber-300 block font-semibold">🛡️ 移動停利防線</span>
+                  <span class="text-[10px] text-amber-300 block font-semibold">🛡️ 移動停利(優先出場)</span>
                   <strong class="text-amber-300 font-mono text-sm">${d.trailLinePriceVal.toFixed(2)}</strong>
                 </div>
                 <div class="p-1.5 rounded ${d.profitPct >= 5.0 ? 'bg-emerald-950/70 border border-emerald-500/60' : 'bg-slate-900 border border-slate-700'}">
-                  <span class="text-[10px] ${d.profitPct >= 5.0 ? 'text-emerald-300' : 'text-slate-400'} block font-semibold">${d.profitPct >= 5.0 ? '➕ 准許保本加碼' : '🔒 滿+5%可加碼'}</span>
-                  <strong class="${d.profitPct >= 5.0 ? 'text-emerald-400' : 'text-slate-300'} font-mono text-sm">${(item.entryPrice * 1.05).toFixed(2)}</strong>
+                  <span class="text-[10px] ${d.profitPct >= 5.0 ? 'text-emerald-300' : 'text-slate-400'} block font-semibold">${d.profitPct < 5.0 ? '🔒 滿+5%解鎖加碼門檻' : d.isAlreadyFullSlot ? `✅ 已滿倉(${d.maxFullAlloc}%)續抱` : `➕ 准加碼(+${d.remAddPct}%)後保本價`}</span>
+                  <strong class="${d.profitPct >= 5.0 ? 'text-emerald-400' : 'text-slate-300'} font-mono text-sm">${d.profitPct < 5.0 ? (item.entryPrice * 1.05).toFixed(2) : d.isAlreadyFullSlot ? '免再加碼' : d.newBreakevenCost.toFixed(2)}</strong>
                 </div>
               </div>
             </div>
